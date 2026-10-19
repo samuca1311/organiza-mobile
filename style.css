@@ -132,26 +132,17 @@ a {
   text-decoration:none
 }
 
-.brand-mark {
-  width:37px;
-  height:37px;
-  border:2px solid white;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  margin-right:2px;
-  transform:rotate(-9deg)
-}
-
-.brand-mark svg {
-  width:26px;
-  height:26px
+.brand-space {
+  display:block;
+  width:165px;
+  height:42px;
 }
 
 .brand-image {
-  max-height:42px;
-  max-width:165px;
-  object-fit:contain
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:left center;
 }
 
 .icon-button {
@@ -782,15 +773,13 @@ input::placeholder,textarea::placeholder {
   justify-content:center
 }
 
-.auth .brand-mark {
-  width:54px;
+.auth .brand-space {
+  width:240px;
   height:54px;
-  margin-right:3px
 }
 
-.auth .brand-mark svg {
-  width:36px;
-  height:36px
+.auth .brand-image {
+  object-position:center;
 }
 
 .auth-card {
@@ -867,13 +856,10 @@ label {
   object-fit:contain
 }
 
-.social-placeholder {
+.social-image {
   width:22px;
   height:22px;
-  display:grid;
-  place-items:center;
-  font-weight:bold;
-  color:#555
+  flex-shrink:0;
 }
 
 .auth-foot {

@@ -28,15 +28,37 @@ const paths = {
   close:'m6 6 12 12M6 18 18 6',
   arrow:'M4 12h16m-6-6 6 6-6 6',
   search:'M16 10a6 6 0 1 1-12 0 6 6 0 0 1 12 0m-2 4 7 7',
-  phone:'M5 2 2 5c0 9 8 17 17 17l3-3-6-4-3 3-7-7 3-3Z',
   check:'m5 12 4 4L19 6',
   logout:'M9 3H3v18h6m5-15 6 6-6 6M7 12h13',
   download:'M12 2v13m-5-5 5 5 5-5M3 17v5h18v-5',
   shield:'m12 2 9 4v7c0 5-9 9-9 9s-9-4-9-9V6Zm-5 10 3 3 7-7'
 };
-const icon = name => `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="${paths[name] || paths.book}"/></svg>`;
-const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const id = () => crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+function icon(name) {
+  const path = paths[name] || paths.book;
+  return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="${path}"/></svg>`;
+}
+
+// Protege os textos digitados antes de colocá-los no HTML.
+function escapeHTML(value) {
+  const entities = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
+  const text = String(value ?? '');
+  return text.replace(/[&<>"']/g, function (character) {
+    return entities[character];
+  });
+}
+
+function id() {
+  if (crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
 let storageAvailable = true;
 let store;
 try { store = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { accounts:[], session:null }; }
@@ -52,6 +74,45 @@ let shiftFilter = '';
 let toastTimer;
 
 function seedData() {
+  // Cada dia recebe as mesmas aulas de exemplo.
+  const lessons = [];
+  const morningTimes = ['07:30', '08:20', '09:10', '10:10', '11:00'];
+  const morningEnds = ['08:20', '09:10', '10:00', '11:00', '11:50'];
+
+  for (let day = 0; day < days.length; day++) {
+    for (let index = 0; index < morningTimes.length; index++) {
+      let subject = 'Programação';
+      let personId = 'p1';
+      let roomId = 'r4';
+
+      if (index >= 3) {
+        subject = 'Inglês';
+        personId = 'p2';
+        roomId = 'r5';
+      }
+
+      lessons.push({
+        id: id(), day: day, time: morningTimes[index], end: morningEnds[index],
+        subject: subject, classId: 't4', personId: personId, roomId: roomId
+      });
+    }
+
+    lessons.push({
+      id: id(), day: day, time: '13:00', end: '13:50',
+      subject: 'Programação', classId: 't1', personId: 'p1', roomId: 'r1'
+    });
+
+    // Na terça-feira, a sala compartilhada demonstra o alerta de conflito.
+    let chemistryRoom = 'r2';
+    if (day === 1) {
+      chemistryRoom = 'r4';
+    }
+    lessons.push({
+      id: id(), day: day, time: '07:30', end: '08:20',
+      subject: 'Química', classId: 't2', personId: 'p3', roomId: chemistryRoom
+    });
+  }
+
   return {
     courses:[
       {id:'c1',name:'Informática',type:'Curso Técnico',icon:'monitor',color:'purple'},
@@ -67,19 +128,31 @@ function seedData() {
     ],
     people:[{id:'p1',name:'Carlos Pereira',subject:'Programação'},{id:'p2',name:'Ana Souza',subject:'Inglês'},{id:'p3',name:'Marcos Lima',subject:'Química'}],
     rooms:[{id:'r1',name:'C305',capacity:35},{id:'r2',name:'B104',capacity:35},{id:'r3',name:'A101',capacity:30},{id:'r4',name:'C311',capacity:35},{id:'r5',name:'C201',capacity:35},{id:'r6',name:'C306',capacity:40}],
-    lessons:days.flatMap((_,day) => [
-      ...['07:30','08:20','09:10'].map(time=>({id:id(),day,time,end:time==='07:30'?'08:20':time==='08:20'?'09:10':'10:00',subject:'Programação',classId:'t4',personId:'p1',roomId:'r4'})),
-      ...['10:10','11:00'].map(time=>({id:id(),day,time,end:time==='10:10'?'11:00':'11:50',subject:'Inglês',classId:'t4',personId:'p2',roomId:'r5'})),
-      {id:id(),day,time:'13:00',end:'13:50',subject:'Programação',classId:'t1',personId:'p1',roomId:'r1'},
-      {id:id(),day,time:'07:30',end:'08:20',subject:'Química',classId:'t2',personId:'p3',roomId:day===1?'r4':'r2'}
-    ]),
+    lessons: lessons,
     history:[],messages:[]
   };
 }
-const data = () => account.data;
-const isManager = () => account?.role === 'Gestor';
-const find = (type, value) => data()[type].find(item => item.id === value);
-const nameOf = (type,value) => find(type,value)?.name || 'Não definido';
+function data() {
+  return account.data;
+}
+
+function isManager() {
+  return account?.role === 'Gestor';
+}
+
+function find(type, value) {
+  return data()[type].find(function (item) {
+    return item.id === value;
+  });
+}
+
+function nameOf(type, value) {
+  const item = find(type, value);
+  if (item && item.name) {
+    return item.name;
+  }
+  return 'Não definido';
+}
 
 function persist() {
   try { localStorage.setItem(STORAGE_KEY,JSON.stringify(store)); storageAvailable = true; return true; }
@@ -98,23 +171,107 @@ function toast(message) {
   clearTimeout(toastTimer); toastTimer = setTimeout(()=>el.classList.remove('visible'),4000);
 }
 function brand() {
-  // Para usar sua logo, coloque o arquivo em assets e altere LOGO_URL abaixo.
-  const LOGO_URL = ''; // Ex.: 'assets/logo.png'
-  return `<div class="brand">${LOGO_URL ? `<img class="brand-image" src="${LOGO_URL}" alt="Organiza">` : `<span class="brand-mark">${icon('calendar')}</span><span>Organiza</span>`}</div>`;
+  // Coloque a logo completa (símbolo e nome) em assets/logo.png.
+  return `<div class="brand">
+    <span class="brand-space">
+      <img class="brand-image" src="assets/logo.png" alt="Organiza" onerror="this.hidden = true">
+    </span>
+  </div>`;
 }
 function shell(title,subtitle,body,extra='') {
   const links = isManager() ? [['home','home','Início'],['courses','list','Cursos'],['schedule','calendar','Horários'],['ai','ai','Assistente'],['settings','settings','Ajustes']] : [['home','home','Início'],['schedule','calendar','Horários'],['notices','list','Avisos'],['settings','settings','Ajustes']];
   app.innerHTML = `<header class="topbar"><div class="brand-row">${brand()}<button class="icon-button" data-page="notices" aria-label="Ver notificações">${icon('bell')}${conflicts().length?'<span class="notification-dot"></span>':''}</button></div><h1>${escapeHTML(title)}</h1><p class="subtitle">${escapeHTML(subtitle)}</p></header><main class="content ${extra}">${body}</main><nav class="bottom-nav" aria-label="Navegação principal">${links.map(([target,img,label])=>`<button class="nav-item ${(page===target || target==='courses'&&['classes','people','rooms'].includes(page))?'active':''}" data-page="${target}" ${page===target?'aria-current="page"':''}>${icon(img)}<span>${label}</span></button>`).join('')}</nav>`;
 }
 function render() {
-  if(!account) { renderLogin(); return; }
-  if(page==='profiles' || !account.role) { renderProfiles(); return; }
-  const pages = {home:renderHome,schedule:renderSchedule,courses:()=>renderEntities('courses'),classes:()=>renderEntities('classes'),people:()=>renderEntities('people'),rooms:()=>renderEntities('rooms'),settings:renderSettings,notices:renderNotices,ai:renderAI,chat:renderChat};
-  (pages[page] || renderHome)();
+  if (!account) {
+    renderLogin();
+    return;
+  }
+  if (page === 'profiles' || !account.role) {
+    renderProfiles();
+    return;
+  }
+
+  switch (page) {
+    case 'schedule':
+      renderSchedule();
+      break;
+    case 'courses':
+    case 'classes':
+    case 'people':
+    case 'rooms':
+      renderEntities(page);
+      break;
+    case 'settings':
+      renderSettings();
+      break;
+    case 'notices':
+      renderNotices();
+      break;
+    case 'ai':
+      renderAI();
+      break;
+    case 'chat':
+      renderChat();
+      break;
+    default:
+      renderHome();
+  }
 }
-function navigate(target) { page=target;query='';courseFilter='';shiftFilter='';render();window.scrollTo(0,0); }
+function navigate(target) {
+  page = target;
+  query = '';
+  courseFilter = '';
+  shiftFilter = '';
+  render();
+  window.scrollTo(0, 0);
+}
 function renderLogin() {
-  app.innerHTML = `<main class="auth">${brand()}<section class="auth-card"><h1>${signup?'Criar conta':'Login'}</h1><p class="muted">${signup?'Comece a organizar sua rotina.':'Sua rotina, no horário certo.'}</p><form id="auth-form">${signup?'<label>Nome<input name="name" autocomplete="name" placeholder="Como podemos te chamar?" maxlength="60" required></label>':''}<label>E-mail<input type="email" name="email" autocomplete="username" placeholder="voce@exemplo.com" maxlength="120" required></label><label>Senha<input type="password" name="password" autocomplete="${signup?'new-password':'current-password'}" placeholder="${signup?'Pelo menos 6 caracteres':'Digite sua senha'}" minlength="6" maxlength="128" required></label><p id="auth-error" class="form-error" role="alert"></p><button class="primary full" type="submit">${signup?'Criar minha conta':'Entrar'}</button></form><button class="auth-switch" data-action="toggle-auth">${signup?'Já tenho uma conta':'Primeiro acesso? Criar conta'}</button><div class="divider">ou</div><button class="social" data-action="integration" data-name="Google"><span class="social-placeholder" id="google-icon">G</span>Entrar com Google</button><button class="social" data-action="integration" data-name="telefone">${icon('phone')}Entrar com telefone</button><button class="auth-switch" data-action="demo">Explorar demonstração</button></section><p class="auth-foot">Protótipo local • seus dados ficam neste navegador.<br>Use uma senha de teste, sem dados sensíveis.</p></main>`;
+  let title = 'Login';
+  let subtitle = 'Sua rotina, no horário certo.';
+  let nameField = '';
+  let passwordAutocomplete = 'current-password';
+  let passwordPlaceholder = 'Digite sua senha';
+  let submitLabel = 'Entrar';
+  let switchLabel = 'Primeiro acesso? Criar conta';
+
+  if (signup) {
+    title = 'Criar conta';
+    subtitle = 'Comece a organizar sua rotina.';
+    nameField = `<label>Nome<input name="name" autocomplete="name" placeholder="Como podemos te chamar?" maxlength="60" required></label>`;
+    passwordAutocomplete = 'new-password';
+    passwordPlaceholder = 'Pelo menos 6 caracteres';
+    submitLabel = 'Criar minha conta';
+    switchLabel = 'Já tenho uma conta';
+  }
+
+  app.innerHTML = `
+    <main class="auth">
+      ${brand()}
+      <section class="auth-card">
+        <h1>${title}</h1>
+        <p class="muted">${subtitle}</p>
+        <form id="auth-form">
+          ${nameField}
+          <label>E-mail<input type="email" name="email" autocomplete="username" placeholder="voce@exemplo.com" maxlength="120" required></label>
+          <label>Senha<input type="password" name="password" autocomplete="${passwordAutocomplete}" placeholder="${passwordPlaceholder}" minlength="6" maxlength="128" required></label>
+          <p id="auth-error" class="form-error" role="alert"></p>
+          <button class="primary full" type="submit">${submitLabel}</button>
+        </form>
+        <button class="auth-switch" data-action="toggle-auth">${switchLabel}</button>
+        <div class="divider">ou</div>
+        <button class="social" data-action="integration" data-name="Google">
+          <span class="social-image"><img src="assets/google.png" alt="" onerror="this.hidden = true"></span>
+          Entrar com Google
+        </button>
+        <button class="social" data-action="integration" data-name="telefone">
+          <span class="social-image"><img src="assets/telefone.png" alt="" onerror="this.hidden = true"></span>
+          Entrar com telefone
+        </button>
+        <button class="auth-switch" data-action="demo">Explorar demonstração</button>
+      </section>
+      <p class="auth-foot">Protótipo local • seus dados ficam neste navegador.<br>Use uma senha de teste, sem dados sensíveis.</p>
+    </main>`;
 }
 function renderProfiles() {
   app.innerHTML = `<main class="profile-screen"><header class="profile-header">${brand()}</header><section class="profile-panel"><h1>Selecione seu Perfil</h1><p class="muted">Um espaço para cada parte da sua rotina.</p>${[['Participante','users','Visualize suas aulas e acompanhe os avisos.'],['Gestor','users','Gerencie horários, cursos e turmas.'],['Colaborador','user','Consulte horários e informações das aulas.']].map(([role,img,description])=>`<article class="card profile-choice"><div class="row"><div class="avatar">${icon(img)}</div><div><h2>${role}</h2><p>${description}</p></div></div><button class="primary" data-role="${role}">Entrar como ${role.toLowerCase()} ${icon('arrow')}</button></article>`).join('')}<p class="profile-footer">Você pode trocar seu perfil nos ajustes.</p></section></main>`;
@@ -173,7 +330,19 @@ const entityLabels={courses:['Cursos','Conheça os cursos cadastrados.','Curso']
 function empty(title,description) {return `<div class="empty">${icon('calendar')}<strong>${title}</strong>${description}</div>`;}
 function entityActions(type,itemId) { return `<div class="entity-actions"><button class="edit-button" data-edit="${type}" data-id="${itemId}" aria-label="Editar ${entityLabels[type]?.[2]?.toLowerCase() || 'aula'}">${icon('edit')}</button><button class="edit-button delete" data-delete="${type}" data-id="${itemId}" aria-label="Excluir ${entityLabels[type]?.[2]?.toLowerCase() || 'aula'}">${icon('trash')}</button></div>`; }
 function entityList(type) {
-  const items=data()[type].filter(item=>(`${item.name} ${item.code||''}`.toLowerCase().includes(query.toLowerCase()))&&(!courseFilter||item.courseId===courseFilter)&&(!shiftFilter||item.shift===shiftFilter));
+  const items = data()[type].filter(function (item) {
+    const searchableText = `${item.name} ${item.code || ''}`.toLowerCase();
+    if (!searchableText.includes(query.toLowerCase())) {
+      return false;
+    }
+    if (courseFilter && item.courseId !== courseFilter) {
+      return false;
+    }
+    if (shiftFilter && item.shift !== shiftFilter) {
+      return false;
+    }
+    return true;
+  });
   if(!items.length) return empty('Nada por aqui','Tente outra busca ou adicione um cadastro.');
   return items.map(item=>{
     const course = type==='classes'?find('courses',item.courseId):item;
@@ -191,15 +360,34 @@ function renderEntities(type) {
   shell(title,subtitle,`<div class="toolbar"><div class="search">${icon('search')}<input id="search" data-type="${type}" type="search" aria-label="Procurar ${title.toLowerCase()}" placeholder="Procurar ${title.toLowerCase()}…" value="${escapeHTML(query)}"></div><button class="secondary" data-edit="${type}">+ ${['Turma','Sala'].includes(singular)?'Nova':'Novo'} ${singular}</button></div>${type==='classes'?`<div class="filters"><select id="filter-course" aria-label="Filtrar por curso"><option value="">Todos os cursos</option>${data().courses.map(c=>`<option value="${c.id}" ${c.id===courseFilter?'selected':''}>${escapeHTML(c.name)}</option>`).join('')}</select><select id="filter-shift" aria-label="Filtrar por turno"><option value="">Todos os turnos</option>${['Manhã','Tarde','Noite'].map(s=>`<option ${s===shiftFilter?'selected':''}>${s}</option>`).join('')}</select></div>`:''}<div id="entity-list" class="stack">${entityList(type)}</div>`);
 }
 function conflicts() {
-  const found=[]; const lessons=data().lessons;
-  lessons.forEach((a,index)=>lessons.slice(index+1).forEach(b=>{
-    if(a.day!==b.day || a.time>=b.end || b.time>=a.end) return;
-    const reasons=[];
-    if(a.classId===b.classId) reasons.push('turma em duas aulas');
-    if(a.personId===b.personId) reasons.push('professor em duas aulas');
-    if(a.roomId===b.roomId) reasons.push('sala compartilhada');
-    if(reasons.length) found.push({a,b,reasons});
-  })); return found;
+  const found = [];
+  const lessons = data().lessons;
+
+  // Compara cada par de aulas uma única vez.
+  for (let index = 0; index < lessons.length; index++) {
+    const a = lessons[index];
+    for (let nextIndex = index + 1; nextIndex < lessons.length; nextIndex++) {
+      const b = lessons[nextIndex];
+      if (a.day !== b.day || a.time >= b.end || b.time >= a.end) {
+        continue;
+      }
+
+      const reasons = [];
+      if (a.classId === b.classId) {
+        reasons.push('turma em duas aulas');
+      }
+      if (a.personId === b.personId) {
+        reasons.push('professor em duas aulas');
+      }
+      if (a.roomId === b.roomId) {
+        reasons.push('sala compartilhada');
+      }
+      if (reasons.length > 0) {
+        found.push({a: a, b: b, reasons: reasons});
+      }
+    }
+  }
+  return found;
 }
 function renderNotices() {
   const items=conflicts();
@@ -250,7 +438,16 @@ function saveEntity(form) {
 function askDelete(type,itemId) {
   if(!isManager()) return;
   const item=find(type,itemId);if(!item) return;
-  const blocked = type==='courses'?data().classes.some(t=>t.courseId===itemId):type==='people'?data().lessons.some(l=>l.personId===itemId):type==='rooms'?data().lessons.some(l=>l.roomId===itemId)||data().classes.some(t=>t.roomId===itemId):false;
+  let blocked = false;
+  if (type === 'courses') {
+    blocked = data().classes.some(turma => turma.courseId === itemId);
+  } else if (type === 'people') {
+    blocked = data().lessons.some(lesson => lesson.personId === itemId);
+  } else if (type === 'rooms') {
+    const usedInLessons = data().lessons.some(lesson => lesson.roomId === itemId);
+    const usedInClasses = data().classes.some(turma => turma.roomId === itemId);
+    blocked = usedInLessons || usedInClasses;
+  }
   if(blocked) {showModal('Cadastro em uso','<p>Este cadastro está associado a turmas ou aulas. Edite essas associações antes de excluí-lo.</p><button class="primary full" style="margin-top:20px" data-action="close">Entendi</button>');return;}
   showModal('Excluir cadastro?',`<p>Excluir <b>${escapeHTML(item.name||item.subject)}</b>? ${type==='classes'?'As aulas desta turma também serão excluídas. ':''}Esta ação não pode ser desfeita.</p><div class="modal-actions"><button class="secondary" data-action="close">Cancelar</button><button class="danger" data-confirm-delete="${type}" data-id="${itemId}">Excluir</button></div>`);
 }

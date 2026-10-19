@@ -45,11 +45,18 @@ Sair da conta não apaga os dados. Limpar os dados do navegador apaga as contas 
 
 ## Adicionar imagens
 
-1. Coloque sua logo em `assets/logo.png`.
-2. Em `app.js`, procure `const LOGO_URL = ''` e altere para `const LOGO_URL = 'assets/logo.png'`.
-3. Para o símbolo do Google, procure `<span class="social-placeholder" id="google-icon">G</span>` na função `renderLogin` e substitua por `<img src="assets/google.png" alt="">`.
+1. Coloque a logo completa do Organiza (símbolo e nome) em `assets/logo.png`.
+2. Coloque o ícone do Google em `assets/google.png`.
+3. Coloque o ícone do telefone em `assets/telefone.png`.
+4. Recarregue a página. Os caminhos já estão configurados em `app.js`.
 
-Não há dependências de imagens remotas. Enquanto a logo não é fornecida, o site usa um símbolo de calendário em SVG e o nome Organiza. Os demais ícones são SVGs simples escritos no código.
+Não há dependências de imagens remotas. Enquanto os arquivos não forem fornecidos, os espaços ficam vazios. O evento `onerror` oculta as imagens ausentes, mantendo o espaço reservado pelo CSS. Para usar outros nomes ou formatos, altere os caminhos em `app.js`. Consulte também `assets/IMAGENS.md`.
+
+O calendário que imitava a logo, a letra G e o telefone em SVG foram removidos desses espaços. Os demais ícones de navegação e ações continuam em SVG. O favicon personalizado também foi removido; `index.html` usa um ícone vazio para evitar a busca automática por `favicon.ico`.
+
+## Organização do JavaScript
+
+As funções auxiliares usam declarações `function`. A criação das aulas de exemplo e a comparação de conflitos usam laços `for`. A escolha da tela usa `switch`, e os filtros e bloqueios de exclusão usam condições separadas. A tela de login tem variáveis para os textos e HTML distribuído em várias linhas. As regras, os dados salvos e as funcionalidades continuam os mesmos.
 
 ## Integrações futuras
 

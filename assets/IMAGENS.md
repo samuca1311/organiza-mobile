@@ -1,7 +1,20 @@
 # Suas imagens
 
-Coloque aqui `logo.png` e, se quiser, `google.png`.
-O arquivo `LEIA-ME.md` na pasta principal explica quais linhas alterar no JavaScript para exibi-las.
+Coloque os arquivos nesta pasta com os nomes exatos:
 
-Logo sugerida: PNG transparente ou SVG, com pelo menos 300 px de largura.
-Ícone do Google sugerido: imagem quadrada com pelo menos 48 × 48 px.
+- `logo.png`: logo completa do Organiza, com símbolo e nome.
+- `google.png`: ícone do botão Entrar com Google.
+- `telefone.png`: ícone do botão Entrar com telefone.
+
+Depois de adicionar os arquivos, recarregue a página. Não precisa alterar o JavaScript.
+Enquanto um arquivo não existir, seu espaço fica vazio, sem mostrar uma imagem quebrada.
+Os botões continuam funcionando como antes.
+
+Logo sugerida: PNG transparente com pelo menos 480 px de largura.
+Ícones sugeridos: PNGs quadrados com pelo menos 48 × 48 px.
+
+Para usar outros nomes ou formatos, altere os caminhos `assets/logo.png`,
+`assets/google.png` e `assets/telefone.png` em `app.js`.
+
+O favicon personalizado foi removido. Os outros ícones da interface
+(menu, edição, horários etc.) continuam em SVG.
