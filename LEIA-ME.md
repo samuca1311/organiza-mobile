@@ -1,74 +1,90 @@
 # Organiza
 
-Site mobile inspirado no protótipo enviado. HTML, CSS e JavaScript puros, sem framework, bibliotecas externas ou instalação de dependências.
+Projeto mobile em HTML, CSS e JavaScript puros. Cada tela agora tem seu próprio arquivo HTML, com títulos, textos, botões, links e formulários escritos nele.
 
 ## Abrir
 
-Abra `index.html` no navegador. Para desenvolver, recomendo abrir a pasta no VS Code e usar a extensão Live Server. Também é possível servir a pasta com `python -m http.server 5500` e acessar `http://localhost:5500`.
+Abra a pasta no VS Code e use o Live Server em `index.html`. Outra opção é executar `python -m http.server 5500` dentro da pasta e acessar `http://localhost:5500`.
 
-Na tela inicial, clique em **Primeiro acesso? Criar conta**. Crie um usuário de teste e escolha o perfil. Ou clique em **Explorar demonstração** para usar os dados de exemplo imediatamente.
+Use sempre o mesmo endereço e porta para manter os dados do navegador. Os arquivos usam scripts clássicos e caminhos relativos, sem framework, instalação de pacotes, compilação ou busca de HTML por JavaScript. É possível abrir `index.html` diretamente, mas o compartilhamento de localStorage entre arquivos e a API de senha dependem do navegador; prefira localhost ou HTTPS.
 
-O layout ocupa a largura do celular até 430 px. Em computadores ele permanece centralizado nessa largura: não há versão desktop. As telas rolam normalmente, com o menu fixo na parte inferior.
+No primeiro acesso, escolha **Primeiro acesso? Criar conta** ou **Explorar demonstração**. Depois selecione o perfil.
 
-## Arquivos para editar
+## Arquivos HTML
 
-- `index.html`: documento principal, área da aplicação, modal e aviso de salvamento.
-- `style.css`: todas as cores, tamanhos, cartões, formulários e navegação.
-- `app.js`: dados iniciais, telas, eventos, login local, salvamento e assistente.
-- `assets/`: pasta para imagens e ícones próprios.
+| Arquivo | Tela |
+| --- | --- |
+| `index.html` | Login |
+| `cadastro.html` | Criar conta |
+| `perfis.html` | Selecionar perfil |
+| `inicio.html` | Painel inicial do gestor ou das aulas |
+| `horarios.html` | Horários e detalhes das aulas |
+| `cursos.html` | Cursos |
+| `turmas.html` | Turmas |
+| `colaboradores.html` | Colaboradores |
+| `salas.html` | Salas |
+| `avisos.html` | Conflitos e histórico de alterações |
+| `ajustes.html` | Mensagem “Ainda em desenvolvimento” |
+| `assistente.html` | Apresentação do assistente local |
+| `chat.html` | Conversa com o assistente local |
 
-O JavaScript usa funções diretas, objetos e arrays. Os comentários indicam as principais decisões. Não existe etapa de compilação.
+Os links usam `<a href="arquivo.html">`. Cada clique abre outro documento. A sessão e os cadastros são recuperados do localStorage ao carregar a nova página.
 
-## O que funciona
+O painel inicial contém duas seções: uma para o gestor e outra para participante/colaborador. O JavaScript mostra a seção correspondente ao perfil.
 
-- Criar conta local, entrar e manter a sessão depois de recarregar.
-- Perfis Participante, Gestor e Colaborador, escolhidos após o login.
-- Painel de resumo do gestor e painel de aulas do participante/colaborador.
+Os formulários de edição, confirmações, cartões das listas e mensagens também estão no HTML, em elementos `<template>`. O JavaScript copia esses modelos e preenche os dados. Os botões de ação (salvar, excluir, escolher dia etc.) continuam sendo `<button>`, pois executam ações na página.
+
+## CSS e JavaScript
+
+- `style.css`: visual compartilhado, incluindo os links com aparência de botão.
+- `dados.js`: dados iniciais, armazenamento, sessão, funções auxiliares, hash de senha e regras de conflito.
+- `app.js`: preenchimento das listas e campos, login, escolha de perfil, cadastros, eventos e comandos do assistente.
+- `assets/`: imagens que você adicionar.
+
+Para editar um texto ou botão fixo, procure o HTML da tela. Para mudar uma regra ou o preenchimento de uma lista, procure a função correspondente em `app.js` ou `dados.js`. Os ícones simples usados nas listas são SVGs definidos em `dados.js`; os ícones fixos estão nos HTMLs.
+
+## Funcionalidades
+
+- Criar conta local, entrar e restaurar a sessão ao abrir outra página ou recarregar.
+- Selecionar Participante, Gestor ou Colaborador.
 - Criar, editar e excluir cursos, turmas, colaboradores, salas e aulas.
 - Buscar cadastros e filtrar turmas por curso e turno.
-- Consultar horários por turma e dia da semana e abrir detalhes das aulas.
+- Consultar horários por turma e dia e abrir detalhes das aulas.
 - Bloquear exclusão de cursos, professores e salas que ainda estão em uso.
 - Detectar aulas sobrepostas para a mesma sala, turma ou professor.
-- Salvar perfil escolhido, turma selecionada, cadastros e histórico de alterações.
-- Assistente local: consultar conflitos ou propor a troca de sala de uma turma. A troca só acontece depois de confirmar. Exemplo: `Trocar a sala da turma 62-2 para C306`.
+- Salvar cadastros e histórico de alterações no navegador.
+- Consultar conflitos e propor troca de sala no assistente local, com confirmação antes de aplicar.
 
-Os dados iniciais contêm um conflito proposital na terça-feira para demonstrar os alertas. O assistente informa conflitos após alterar salas; não resolve automaticamente todas as restrições de uma grade.
+O link de um curso abre `turmas.html?curso=ID`. O botão Revisar aula abre `horarios.html?editar=ID`, seleciona a turma e o dia da aula e abre a edição.
 
-## Áreas em desenvolvimento
+Os dados iniciais incluem um conflito proposital na terça-feira. Os ajustes continuam em desenvolvimento: edição de perfil, troca de perfil pelos ajustes, exportação, informações de salvamento e saída da conta permanecem indisponíveis.
 
-A tela Ajustes mostra apenas “Ainda em desenvolvimento”. As opções de editar o perfil, trocar de perfil pelos ajustes, exportar dados, consultar informações de salvamento e sair da conta foram removidas nesta versão. A sessão continua sendo restaurada ao recarregar a página.
-
-O atalho do assistente foi removido do menu inferior, junto com o desenho do ícone. O acesso ao chat pelo cartão “Gerar automaticamente” continua disponível no painel do gestor.
+O ícone e o atalho do assistente continuam fora do menu inferior. O cartão “Gerar automaticamente” abre `chat.html`. A página `assistente.html` continua disponível pelo endereço direto.
 
 ## Salvamento e login
 
-Tudo fica no `localStorage`, na chave `organiza-v1`. Cada conta tem seus próprios cadastros; a sessão é restaurada ao reabrir o mesmo endereço no mesmo navegador. As alterações são salvas ao confirmar cada formulário.
+Os dados continuam na chave `organiza-v1` do localStorage. As contas e cadastros da versão anterior são reutilizados no mesmo endereço, porta e navegador. Não há sincronização entre aparelhos. Limpar os dados do navegador apaga essas informações.
 
-A opção de sair da conta está indisponível nesta versão. Limpar os dados do navegador apaga as contas e os cadastros locais. Outro navegador, aparelho, domínio ou porta possui armazenamento separado. Mudar do arquivo local para um servidor também pode trocar o armazenamento.
+Este é um login de protótipo, sem servidor. Use uma senha de teste. O hash SHA-256 com salt foi preservado, mas a seleção de perfis não oferece controle de acesso real. A API de senha exige um contexto compatível, como localhost ou HTTPS.
 
-**Este é um login de protótipo, não autenticação de produção.** A senha usa hash SHA-256 com salt para não ser gravada diretamente, mas os dados e os perfis continuam controlados no próprio navegador. Use uma senha de teste. A seleção de perfil é livre e não protege informações. Para publicar com usuários reais, é necessário implementar backend, autenticação e permissões no servidor. `crypto.subtle` requer contexto seguro; use HTTPS, localhost ou um navegador que permita essa API em arquivos locais.
+As páginas internas redirecionam para o login quando não há sessão. As páginas de gerenciamento e assistente exigem o perfil Gestor na interface.
 
 ## Adicionar imagens
 
-1. Coloque a logo completa do Organiza (símbolo e nome) em `assets/logo.png`.
-2. Coloque o ícone do Google em `assets/google.png`.
-3. Coloque o ícone do telefone em `assets/telefone.png`.
-4. Recarregue a página. Os caminhos já estão configurados em `app.js`.
+Coloque os arquivos em:
 
-Não há dependências de imagens remotas. Enquanto os arquivos não forem fornecidos, os espaços ficam vazios. O evento `onerror` oculta as imagens ausentes, mantendo o espaço reservado pelo CSS. Para usar outros nomes ou formatos, altere os caminhos em `app.js`. Consulte também `assets/IMAGENS.md`.
+- `assets/logo.png`: logo completa, com símbolo e nome.
+- `assets/google.png`: ícone do Google.
+- `assets/telefone.png`: ícone do telefone.
 
-O calendário que imitava a logo, a letra G e o telefone em SVG foram removidos desses espaços. Os demais ícones de navegação e ações continuam em SVG. O favicon personalizado também foi removido; `index.html` usa um ícone vazio para evitar a busca automática por `favicon.ico`.
+Depois recarregue a página. Até adicionar as imagens, os espaços ficam vazios. Para usar outros nomes ou formatos, altere o atributo `src` das imagens nos arquivos HTML correspondentes. O favicon personalizado continua removido.
 
-## Organização do JavaScript
+Adicionar as imagens não ativa o login com Google ou telefone. Esses botões continuam mostrando a mensagem sobre a integração futura.
 
-As funções auxiliares usam declarações `function`. A criação das aulas de exemplo e a comparação de conflitos usam laços `for`. A escolha da tela usa `switch`, e os filtros e bloqueios de exclusão usam condições separadas. A tela de login tem variáveis para os textos e HTML distribuído em várias linhas. As regras, os dados salvos e as funcionalidades continuam os mesmos.
+## Assistente
 
-## Integrações futuras
+O assistente usa regras locais, sem modelo de IA externo. Exemplo de comando: `Trocar a sala da turma 62-2 para C306`. Ele permite consultar conflitos ou trocar a sala principal e as aulas da turma após confirmar. Não gera uma grade completa automaticamente.
 
-Google e telefone têm os botões e os pontos de entrada na interface, mas ainda não estão conectados a um provedor de autenticação. Os botões explicam isso ao clicar. Adicionar apenas a imagem do Google não ativa o login.
+## Hospedagem
 
-A tela Organiza IA preserva a proposta visual e oferece um assistente **por regras locais**, sem usar modelo de IA. Para conectar um serviço real, substitua a lógica da função `sendMessage` por uma chamada ao seu backend. Nunca coloque chaves privadas de API no JavaScript do navegador.
-
-## Hospedagem estática
-
-Qualquer servidor estático pode servir `index.html`, `style.css`, `app.js` e `assets/` na mesma pasta. Este repositório contém apenas os arquivos do projeto e a documentação.
+Publique todos os arquivos HTML junto de `style.css`, `dados.js`, `app.js` e `assets/`. Mantenha a estrutura da pasta para os links relativos funcionarem, inclusive no GitHub Pages.

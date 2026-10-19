@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2924e8">
+  <meta name="description" content="Organiza: seus cursos, turmas e horários em um só lugar.">
+  <title>Selecione seu Perfil | Organiza</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <script src="dados.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body data-page="profiles">
+  <div id="app" class="app">
+<main class="profile-screen">
+  <header class="profile-header"><div class="brand">
+  <span class="brand-space">
+    <img class="brand-image" src="assets/logo.png" alt="Organiza" onerror="this.hidden = true">
+  </span>
+</div></header>
+  <section class="profile-panel">
+    <h1>Selecione seu Perfil</h1>
+    <p class="muted">Um espaço para cada parte da sua rotina.</p>
+    <article class="card profile-choice">
+  <div class="row">
+    <div class="avatar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M2 21v-3a6 6 0 0 1 12 0v3m3-17a4 4 0 0 1 0 7m1 4a5 5 0 0 1 4 5v1"/></svg></div>
+    <div><h2>Participante</h2><p>Visualize suas aulas e acompanhe os avisos.</p></div>
+  </div>
+  <a class="primary" href="inicio.html" data-role="Participante">Entrar como participante <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a>
+</article>
+<article class="card profile-choice">
+  <div class="row">
+    <div class="avatar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M2 21v-3a6 6 0 0 1 12 0v3m3-17a4 4 0 0 1 0 7m1 4a5 5 0 0 1 4 5v1"/></svg></div>
+    <div><h2>Gestor</h2><p>Gerencie horários, cursos e turmas.</p></div>
+  </div>
+  <a class="primary" href="inicio.html" data-role="Gestor">Entrar como gestor <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a>
+</article>
+<article class="card profile-choice">
+  <div class="row">
+    <div class="avatar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-2a8 8 0 0 1 16 0v2"/></svg></div>
+    <div><h2>Colaborador</h2><p>Consulte horários e informações das aulas.</p></div>
+  </div>
+  <a class="primary" href="inicio.html" data-role="Colaborador">Entrar como colaborador <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a>
+</article>
+
+  </section>
+</main>
+  </div>
+  <dialog id="modal" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 id="modal-title"></h2>
+      <button class="icon-button" data-action="close" aria-label="Fechar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
+    </div>
+    <div id="modal-content"></div>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+
+<template id="message-template">
+  <p data-message></p>
+  <button class="primary full dialog-space" data-action="close">Entendi</button>
+</template>
+<template id="delete-template">
+  <p>Excluir <b data-item-name></b>? <span data-class-warning hidden>As aulas desta turma também serão excluídas. </span>Esta ação não pode ser desfeita.</p>
+  <div class="modal-actions">
+    <button class="secondary" data-action="close">Cancelar</button>
+    <button class="danger" data-confirm-delete>Excluir</button>
+  </div>
+</template>
+<template id="empty-template">
+  <div class="empty"><strong data-empty-title></strong><span data-empty-description></span></div>
+</template>
+
+</body>
+</html>

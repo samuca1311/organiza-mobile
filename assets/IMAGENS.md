@@ -13,8 +13,10 @@ Os botões continuam funcionando como antes.
 Logo sugerida: PNG transparente com pelo menos 480 px de largura.
 Ícones sugeridos: PNGs quadrados com pelo menos 48 × 48 px.
 
-Para usar outros nomes ou formatos, altere os caminhos `assets/logo.png`,
-`assets/google.png` e `assets/telefone.png` em `app.js`.
+Para usar outros nomes ou formatos, altere o atributo `src` das imagens
+nos arquivos HTML correspondentes. A logo está em todas as páginas;
+Google e telefone estão em `index.html` e `cadastro.html`.
 
 O favicon personalizado foi removido. Os outros ícones da interface
 (menu, edição, horários etc.) continuam em SVG.
+

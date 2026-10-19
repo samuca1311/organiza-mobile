@@ -5,14 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#2924e8">
   <meta name="description" content="Organiza: seus cursos, turmas e horários em um só lugar.">
-  <title>Organiza | Seus horários</title>
+  <title>Login | Organiza</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="style.css">
+  <script src="dados.js" defer></script>
   <script src="app.js" defer></script>
 </head>
-<body>
-  <div id="app" class="app"></div>
-  <dialog id="modal" aria-labelledby="modal-title"></dialog>
+<body data-page="login">
+  <div id="app" class="app">
+<main class="auth">
+  <div class="brand">
+  <span class="brand-space">
+    <img class="brand-image" src="assets/logo.png" alt="Organiza" onerror="this.hidden = true">
+  </span>
+</div>
+  <section class="auth-card">
+    <h1>Login</h1>
+    <p class="muted">Sua rotina, no horário certo.</p>
+    <form id="auth-form">
+      
+      <label>E-mail<input type="email" name="email" autocomplete="username" placeholder="voce@exemplo.com" maxlength="120" required></label>
+      <label>Senha<input type="password" name="password" autocomplete="current-password" placeholder="Digite sua senha" minlength="6" maxlength="128" required></label>
+      <p id="auth-error" class="form-error" role="alert"></p>
+      <button class="primary full" type="submit">Entrar</button>
+    </form>
+    <a class="auth-switch" href="cadastro.html">Primeiro acesso? Criar conta</a>
+    <div class="divider">ou</div>
+    <button class="social" data-action="integration" data-name="Google">
+      <span class="social-image"><img src="assets/google.png" alt="" onerror="this.hidden = true"></span>
+      Entrar com Google
+    </button>
+    <button class="social" data-action="integration" data-name="telefone">
+      <span class="social-image"><img src="assets/telefone.png" alt="" onerror="this.hidden = true"></span>
+      Entrar com telefone
+    </button>
+    <button class="auth-switch" data-action="demo">Explorar demonstração</button>
+  </section>
+  <p class="auth-foot">Protótipo local • seus dados ficam neste navegador.<br>Use uma senha de teste, sem dados sensíveis.</p>
+</main>
+  </div>
+  <dialog id="modal" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 id="modal-title"></h2>
+      <button class="icon-button" data-action="close" aria-label="Fechar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
+    </div>
+    <div id="modal-content"></div>
+  </dialog>
   <div id="toast" role="status" aria-live="polite"></div>
+
+
+<template id="message-template">
+  <p data-message></p>
+  <button class="primary full dialog-space" data-action="close">Entendi</button>
+</template>
+<template id="delete-template">
+  <p>Excluir <b data-item-name></b>? <span data-class-warning hidden>As aulas desta turma também serão excluídas. </span>Esta ação não pode ser desfeita.</p>
+  <div class="modal-actions">
+    <button class="secondary" data-action="close">Cancelar</button>
+    <button class="danger" data-confirm-delete>Excluir</button>
+  </div>
+</template>
+<template id="empty-template">
+  <div class="empty"><strong data-empty-title></strong><span data-empty-description></span></div>
+</template>
+
 </body>
 </html>

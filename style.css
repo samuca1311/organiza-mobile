@@ -1257,3 +1257,63 @@ dialog dd {
 input, select, textarea, .filters select, .chat-form input {
   font-size: 16px;
 }
+
+
+
+/* Links entre os arquivos HTML usam o mesmo visual dos botões. */
+[hidden] {
+  display:none !important;
+}
+
+a.primary,a.secondary,a.nav-item,a.metric,a.icon-button,a.prompt-link,a.link-button,a.auth-switch {
+  text-decoration:none;
+}
+
+a.icon-button,a.metric {
+  color:inherit;
+}
+
+a.auth-switch {
+  display:block;
+  text-align:center;
+}
+
+.social {
+  width:100%;
+}
+
+.entity-meta,.alert-card p,.history-text {
+  white-space:pre-line;
+}
+
+.schedule-picker {
+  margin-bottom:18px;
+}
+
+.dialog-space {
+  margin-top:20px;
+}
+
+.history-text {
+  font-size:13px;
+  line-height:1.6;
+}
+
+.history-date {
+  margin-top:8px;
+}
+
+.ai-foot {
+  margin-top:20px;
+  text-align:center;
+}
+
+.warning {
+  color:#a87600;
+}
+
+.save-note svg {
+  width:12px;
+  height:12px;
+  vertical-align:middle;
+}

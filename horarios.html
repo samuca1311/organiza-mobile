@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2924e8">
+  <meta name="description" content="Organiza: seus cursos, turmas e horários em um só lugar.">
+  <title>Meus Horários | Organiza</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <script src="dados.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body data-page="schedule">
+  <div id="app" class="app">
+<header class="topbar">
+  <div class="brand-row">
+    <div class="brand">
+  <span class="brand-space">
+    <img class="brand-image" src="assets/logo.png" alt="Organiza" onerror="this.hidden = true">
+  </span>
+</div>
+    <a class="icon-button" href="avisos.html" aria-label="Ver notificações"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="notification-dot" data-notification hidden></span></a>
+  </div>
+  <h1 id="page-title">Meus Horários</h1>
+  <p class="subtitle">Uma rotina organizada começa aqui.</p>
+</header>
+<main class="content">
+
+<label class="schedule-picker">Turma<select id="schedule-class"></select></label>
+<div class="weekdays" role="group" aria-label="Dia da semana"><button class="day" data-day="0" aria-pressed="false">Seg</button>
+<button class="day" data-day="1" aria-pressed="false">Ter</button>
+<button class="day" data-day="2" aria-pressed="false">Qua</button>
+<button class="day" data-day="3" aria-pressed="false">Qui</button>
+<button class="day" data-day="4" aria-pressed="false">Sex</button></div>
+<div class="list-heading">
+  <span id="schedule-summary"></span>
+  <button class="secondary" data-edit="lessons" data-manager-only>+ Nova aula</button>
+</div>
+<div class="stack" id="lesson-list"></div>
+
+</main>
+<nav class="bottom-nav" aria-label="Navegação principal">
+  <a class="nav-item" href="inicio.html" ><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v11h-7v-8h-4v8H3Z"/></svg><span>Início</span></a>
+  <a class="nav-item" href="cursos.html" data-manager-only><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1"/></svg><span>Cursos</span></a>
+  <a class="nav-item active" href="horarios.html"  aria-current="page"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2M7 14h3m4 0h3m-10 4h3"/></svg><span>Horários</span></a>
+  <a class="nav-item" href="avisos.html" data-reader-only><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1"/></svg><span>Avisos</span></a>
+  <a class="nav-item" href="ajustes.html" ><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 3 1-2h4l1 2 3 2 2 1 2 4-2 2v3l1 2-3 3-3-1-3 2-2-1-3-2-2 1-2-3 1-3-1-3 2-3Z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/></svg><span>Ajustes</span></a>
+</nav>
+  </div>
+  <dialog id="modal" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 id="modal-title"></h2>
+      <button class="icon-button" data-action="close" aria-label="Fechar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
+    </div>
+    <div id="modal-content"></div>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+<template id="lesson-template">
+  <article class="card lesson-card">
+    <div class="row">
+      <div class="avatar" data-lesson-icon></div>
+      <div class="grow"><h3 data-subject></h3><p class="lesson-time" data-time></p></div>
+      <button class="text-action" data-detail>Ver mais →</button>
+    </div>
+    <div class="lesson-meta"><span data-end></span><span data-room></span></div>
+    <div class="entity-actions" data-manager-only>
+  <button class="edit-button" data-edit aria-label="Editar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 3 6 6M3 21l5-1L21 7l-5-5L3 15Z"/></svg></button>
+  <button class="edit-button delete" data-delete aria-label="Excluir"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></svg></button>
+</div>
+  </article>
+</template>
+<template id="details-template">
+  <dl>
+    <dt>Dia</dt><dd data-day-name></dd>
+    <dt>Horário</dt><dd data-hours></dd>
+    <dt>Professor</dt><dd data-person></dd>
+    <dt>Sala</dt><dd data-room></dd>
+    <dt>Turma</dt><dd data-class></dd>
+  </dl>
+  <button class="primary full dialog-space" data-action="close">Entendi</button>
+</template><template id="edit-template">
+  <form id="edit-form">
+    <label>Disciplina<input name="subject" type="text" required maxlength="60"></label>
+<label>Turma<select name="classId" required></select></label>
+<label>Dia da semana<select name="day" required><option value="0">Segunda-feira</option><option value="1">Terça-feira</option><option value="2">Quarta-feira</option><option value="3">Quinta-feira</option><option value="4">Sexta-feira</option></select></label>
+<label>Início<input name="time" type="time" required ></label>
+<label>Término<input name="end" type="time" required ></label>
+<label>Professor<select name="personId" required></select></label>
+<label>Sala<select name="roomId" required></select></label>
+    <p id="edit-error" class="form-error" role="alert"></p>
+    <div class="modal-actions">
+      <button type="button" class="secondary" data-action="close">Cancelar</button>
+      <button class="primary" type="submit">Salvar</button>
+    </div>
+  </form>
+</template>
+
+<template id="message-template">
+  <p data-message></p>
+  <button class="primary full dialog-space" data-action="close">Entendi</button>
+</template>
+<template id="delete-template">
+  <p>Excluir <b data-item-name></b>? <span data-class-warning hidden>As aulas desta turma também serão excluídas. </span>Esta ação não pode ser desfeita.</p>
+  <div class="modal-actions">
+    <button class="secondary" data-action="close">Cancelar</button>
+    <button class="danger" data-confirm-delete>Excluir</button>
+  </div>
+</template>
+<template id="empty-template">
+  <div class="empty"><strong data-empty-title></strong><span data-empty-description></span></div>
+</template>
+
+</body>
+</html>

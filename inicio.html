@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2924e8">
+  <meta name="description" content="Organiza: seus cursos, turmas e horários em um só lugar.">
+  <title>Olá! 👋 | Organiza</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <script src="dados.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body data-page="home">
+  <div id="app" class="app">
+<header class="topbar">
+  <div class="brand-row">
+    <div class="brand">
+  <span class="brand-space">
+    <img class="brand-image" src="assets/logo.png" alt="Organiza" onerror="this.hidden = true">
+  </span>
+</div>
+    <a class="icon-button" href="avisos.html" aria-label="Ver notificações"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="notification-dot" data-notification hidden></span></a>
+  </div>
+  <h1 id="page-title">Olá! 👋</h1>
+  <p class="subtitle">Bem-vindo ao Organiza.</p>
+</header>
+<main class="content">
+
+<section data-manager-only>
+  <div class="section-title"><h2>Resumo geral</h2><span class="badge">Gestor</span></div>
+  <div class="metrics"><a class="metric green" href="cursos.html"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 3h14v18H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2m0 14h14"/></svg><span>Cursos</span><small><b data-count="courses">0</b> cadastrados</small></a>
+<a class="metric pink" href="turmas.html"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M2 21v-3a6 6 0 0 1 12 0v3m3-17a4 4 0 0 1 0 7m1 4a5 5 0 0 1 4 5v1"/></svg><span>Turmas</span><small><b data-count="classes">0</b> ativas</small></a>
+<a class="metric yellow" href="colaboradores.html"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span>Colaboradores</span><small><b data-count="people">0</b> cadastrados</small></a>
+<a class="metric brown" href="salas.html"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 4 6-2 6 3 6-2v17l-6 2-6-3-6 2Zm6-2v17m6-14v17"/></svg><span>Salas</span><small><b data-count="rooms">0</b> disponíveis</small></a>
+<a class="metric blue" href="horarios.html"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0M12 6v6l4 3"/></svg><span>Horários</span><small><b data-count="lessons">0</b> aulas</small></a>
+<a class="metric lime" href="avisos.html"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/></svg><span>Alterações</span><small><b data-count="history">0</b> atualizações</small></a>
+</div>
+  <section class="card assistant-card">
+  <h3>Gerar automaticamente ✧</h3>
+  <a class="prompt-link" href="chat.html"><span>O que deseja alterar?</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a>
+</section>
+  <section class="card notice">
+  <h3>Alertas <span class="warning">⚠</span></h3>
+  <p data-alert-summary>Conferindo os horários...</p>
+  <a class="link-button" href="avisos.html">Conferir avisos →</a>
+</section>
+  <p class="save-note"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg> Salvamento automático neste navegador</p>
+</section>
+<section data-reader-only>
+  <p class="date-line" id="today-date"></p>
+  <section class="card next-card">
+    <p class="eyebrow" id="next-label">Próxima aula</p>
+    <h2 id="next-subject"></h2>
+    <div id="next-details">
+      <div class="detail-bar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0M12 6v6l4 3"/></svg> <span id="next-time"></span></div>
+      <div class="detail-bar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-2a8 8 0 0 1 16 0v2"/></svg> <span id="next-person"></span></div>
+      <div class="detail-bar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 4 6-2 6 3 6-2v17l-6 2-6-3-6 2Zm6-2v17m6-14v17"/></svg> <span id="next-room"></span></div>
+    </div>
+    <p class="muted" id="next-empty" hidden>Confira as próximas aulas em Meus Horários.</p>
+  </section>
+  <div class="section-title"><h2 id="today-title">Aulas de hoje</h2><span class="badge" id="today-count"></span></div>
+  <section class="card">
+    <div id="today-lessons"></div>
+    <p class="muted" id="today-empty" hidden>Nenhuma aula cadastrada para esta turma.</p>
+    <a class="link-button" href="horarios.html">Conferir completo →</a>
+  </section>
+  <div class="section-title"><h2>Avisos</h2></div>
+  <section class="card notice">
+  <h3>Alertas <span class="warning">⚠</span></h3>
+  <p data-alert-summary>Conferindo os horários...</p>
+  <a class="link-button" href="avisos.html">Conferir avisos →</a>
+</section>
+</section>
+
+</main>
+<nav class="bottom-nav" aria-label="Navegação principal">
+  <a class="nav-item active" href="inicio.html"  aria-current="page"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v11h-7v-8h-4v8H3Z"/></svg><span>Início</span></a>
+  <a class="nav-item" href="cursos.html" data-manager-only><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1"/></svg><span>Cursos</span></a>
+  <a class="nav-item" href="horarios.html" ><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2M7 14h3m4 0h3m-10 4h3"/></svg><span>Horários</span></a>
+  <a class="nav-item" href="avisos.html" data-reader-only><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1"/></svg><span>Avisos</span></a>
+  <a class="nav-item" href="ajustes.html" ><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 3 1-2h4l1 2 3 2 2 1 2 4-2 2v3l1 2-3 3-3-1-3 2-2-1-3-2-2 1-2-3 1-3-1-3 2-3Z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/></svg><span>Ajustes</span></a>
+</nav>
+  </div>
+  <dialog id="modal" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 id="modal-title"></h2>
+      <button class="icon-button" data-action="close" aria-label="Fechar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
+    </div>
+    <div id="modal-content"></div>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+<template id="lesson-row-template">
+  <div class="lesson-row"><span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0M12 6v6l4 3"/></svg><span data-subject></span></span><b data-time></b></div>
+</template>
+
+<template id="message-template">
+  <p data-message></p>
+  <button class="primary full dialog-space" data-action="close">Entendi</button>
+</template>
+<template id="delete-template">
+  <p>Excluir <b data-item-name></b>? <span data-class-warning hidden>As aulas desta turma também serão excluídas. </span>Esta ação não pode ser desfeita.</p>
+  <div class="modal-actions">
+    <button class="secondary" data-action="close">Cancelar</button>
+    <button class="danger" data-confirm-delete>Excluir</button>
+  </div>
+</template>
+<template id="empty-template">
+  <div class="empty"><strong data-empty-title></strong><span data-empty-description></span></div>
+</template>
+
+</body>
+</html>
