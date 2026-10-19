@@ -1317,3 +1317,9 @@ a.auth-switch {
   height:12px;
   vertical-align:middle;
 }
+
+/* Reserva o lugar do ícone sem desenhar uma imagem. */
+.nav-icon-space {
+  width:25px;
+  height:25px;
+}

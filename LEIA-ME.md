@@ -59,7 +59,7 @@ O link de um curso abre `turmas.html?curso=ID`. O botão Revisar aula abre `hora
 
 Os dados iniciais incluem um conflito proposital na terça-feira. Os ajustes continuam em desenvolvimento: edição de perfil, troca de perfil pelos ajustes, exportação, informações de salvamento e saída da conta permanecem indisponíveis.
 
-O ícone e o atalho do assistente continuam fora do menu inferior. O cartão “Gerar automaticamente” abre `chat.html`. A página `assistente.html` continua disponível pelo endereço direto.
+O menu inferior do gestor tem um link “Assistente” para `assistente.html`, somente com o texto na parte de baixo, sem imagem de ícone. Um espaço vazio mantém o alinhamento com os outros itens. O cartão “Gerar automaticamente” continua abrindo `chat.html`.
 
 ## Salvamento e login
 
