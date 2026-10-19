@@ -21,25 +21,30 @@ O JavaScript usa funções diretas, objetos e arrays. Os comentários indicam as
 
 ## O que funciona
 
-- Criar conta local, entrar, sair e manter a sessão depois de recarregar.
-- Perfis Participante, Gestor e Colaborador, com troca em Ajustes.
+- Criar conta local, entrar e manter a sessão depois de recarregar.
+- Perfis Participante, Gestor e Colaborador, escolhidos após o login.
 - Painel de resumo do gestor e painel de aulas do participante/colaborador.
 - Criar, editar e excluir cursos, turmas, colaboradores, salas e aulas.
 - Buscar cadastros e filtrar turmas por curso e turno.
 - Consultar horários por turma e dia da semana e abrir detalhes das aulas.
 - Bloquear exclusão de cursos, professores e salas que ainda estão em uso.
 - Detectar aulas sobrepostas para a mesma sala, turma ou professor.
-- Salvar nome, perfil, turma selecionada, cadastros e histórico de alterações.
-- Exportar dados em JSON (consulta/backup manual; não há importação pela interface).
+- Salvar perfil escolhido, turma selecionada, cadastros e histórico de alterações.
 - Assistente local: consultar conflitos ou propor a troca de sala de uma turma. A troca só acontece depois de confirmar. Exemplo: `Trocar a sala da turma 62-2 para C306`.
 
 Os dados iniciais contêm um conflito proposital na terça-feira para demonstrar os alertas. O assistente informa conflitos após alterar salas; não resolve automaticamente todas as restrições de uma grade.
+
+## Áreas em desenvolvimento
+
+A tela Ajustes mostra apenas “Ainda em desenvolvimento”. As opções de editar o perfil, trocar de perfil pelos ajustes, exportar dados, consultar informações de salvamento e sair da conta foram removidas nesta versão. A sessão continua sendo restaurada ao recarregar a página.
+
+O atalho do assistente foi removido do menu inferior, junto com o desenho do ícone. O acesso ao chat pelo cartão “Gerar automaticamente” continua disponível no painel do gestor.
 
 ## Salvamento e login
 
 Tudo fica no `localStorage`, na chave `organiza-v1`. Cada conta tem seus próprios cadastros; a sessão é restaurada ao reabrir o mesmo endereço no mesmo navegador. As alterações são salvas ao confirmar cada formulário.
 
-Sair da conta não apaga os dados. Limpar os dados do navegador apaga as contas e os cadastros locais. Outro navegador, aparelho, domínio ou porta possui armazenamento separado. Mudar do arquivo local para um servidor também pode trocar o armazenamento.
+A opção de sair da conta está indisponível nesta versão. Limpar os dados do navegador apaga as contas e os cadastros locais. Outro navegador, aparelho, domínio ou porta possui armazenamento separado. Mudar do arquivo local para um servidor também pode trocar o armazenamento.
 
 **Este é um login de protótipo, não autenticação de produção.** A senha usa hash SHA-256 com salt para não ser gravada diretamente, mas os dados e os perfis continuam controlados no próprio navegador. Use uma senha de teste. A seleção de perfil é livre e não protege informações. Para publicar com usuários reais, é necessário implementar backend, autenticação e permissões no servidor. `crypto.subtle` requer contexto seguro; use HTTPS, localhost ou um navegador que permita essa API em arquivos locais.
 
