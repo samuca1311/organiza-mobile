@@ -1,5 +1,6 @@
 /* Cada página tem seu próprio HTML. Este arquivo apenas preenche dados e trata ações. */
 const page = document.body.dataset.page;
+const ASSISTANT_TEST_NOTICE = 'Este assistente é um modelo de teste e ainda não está configurado.';
 const signup = page === 'signup';
 const modal = document.querySelector('#modal');
 const params = new URLSearchParams(location.search);
@@ -287,11 +288,7 @@ function renderChat() {
   for (const message of data().messages) {
     const row = copyTemplate('bubble-template');
     row.querySelector('.bubble').classList.add(message.role);
-    text('[data-message]', message.text, row);
-    const button = row.querySelector('[data-apply]');
-    button.hidden = !message.proposal || message.applied;
-    button.dataset.apply = message.id;
-    row.querySelector('[data-applied]').hidden = !message.applied;
+    text('[data-message]', message.role === 'user' ? message.text : ASSISTANT_TEST_NOTICE, row);
     container.append(row);
   }
 }
@@ -409,34 +406,17 @@ function deleteEntity(type,itemId) {
   modal.close();changed(`Excluído: ${item.name||item.subject}.`);
 }
 
-function sendMessage(text) {
-  if(!isManager()) return;
-  text=text.trim();if(!text) return;
-  data().messages.push({id:id(),role:'user',text});
-  const normalized=text.toLowerCase();let reply,proposal;
-  if(/conflit|alerta|diverg/.test(normalized)) {const issues=conflicts();reply=issues.length?`Encontrei ${issues.length} conflito(s):\n${issues.slice(0,5).map(({a,reasons})=>`${days[a.day]}, ${a.time}: ${reasons.join(' e ')}.`).join('\n')}\nVocê pode revisar cada aula na tela Avisos.`:'Tudo certo! Nenhum conflito de sala, professor ou turma foi encontrado.';}
-  else {
-    const turma=data().classes.find(c=>normalized.includes(c.code.toLowerCase()));
-    const room=data().rooms.find(r=>new RegExp(`\\b${r.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i').test(text));
-    if(turma && room && /sala|trocar|alterar|mudar/.test(normalized)) {
-      const count=data().lessons.filter(l=>l.classId===turma.id).length;
-      reply=`Trocar a sala principal da turma ${turma.code} para ${room.name} e atualizar suas ${count} aula(s) da semana? Professores e horários serão mantidos. Confirme abaixo para salvar.`;
-      proposal={classId:turma.id,roomId:room.id};
-    } else reply='Posso conferir conflitos ou trocar a sala de uma turma. Use o código da turma e uma sala cadastrada. Exemplo: “Trocar a sala da turma 62-2 para C306”. Para mudar professores e horários, use a edição de aulas em Horários.';
-  }
-  data().messages.push({id:id(),role:'assistant',text:reply,proposal});
-  data().messages=data().messages.slice(-40);persist();renderChat();window.scrollTo(0,document.body.scrollHeight);
-}
+function sendMessage(message) {
+  if (!isManager()) return;
+  message = message.trim();
+  if (!message) return;
 
-function applyProposal(messageId) {
-  if(!isManager()) return;
-  const message=data().messages.find(m=>m.id===messageId);if(!message?.proposal||message.applied) return;
-  const turma=find('classes',message.proposal.classId),room=find('rooms',message.proposal.roomId);
-  if(!turma||!room) {toast('A turma ou sala foi excluída. Envie um novo comando.');return;}
-  turma.roomId=room.id;data().lessons.filter(l=>l.classId===turma.id).forEach(l=>l.roomId=room.id);message.applied=true;
-  const count=conflicts().length;
-  data().messages.push({id:id(),role:'assistant',text:`Sala atualizada para ${room.name}! ${count?`Existem ${count} conflito(s) na grade. Confira os avisos antes de usar os horários.`:'Nenhum conflito encontrado na grade.'}`});
-  changed(`Sala da turma ${turma.code} alterada para ${room.name}.`);window.scrollTo(0,document.body.scrollHeight);
+  data().messages.push({id: id(), role: 'user', text: message});
+  data().messages.push({id: id(), role: 'assistant', text: ASSISTANT_TEST_NOTICE});
+  data().messages = data().messages.slice(-40);
+  persist();
+  renderChat();
+  window.scrollTo(0, document.body.scrollHeight);
 }
 
 document.addEventListener('click', event => {
@@ -455,8 +435,6 @@ document.addEventListener('click', event => {
   if (d.delete) askDelete(d.delete, d.id);
   if (d.confirmDelete) deleteEntity(d.confirmDelete, d.id);
   if (d.detail) details(d.detail);
-  if (d.example) sendMessage(d.example);
-  if (d.apply) applyProposal(d.apply);
   if (d.action === 'close') modal.close();
   if (d.action === 'demo') demo();
   if (d.action === 'integration') {

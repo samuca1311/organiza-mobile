@@ -38,7 +38,7 @@ Os formulários de edição, confirmações, cartões das listas e mensagens tam
 
 - `style.css`: visual compartilhado, incluindo os links com aparência de botão.
 - `dados.js`: dados iniciais, armazenamento, sessão, funções auxiliares, hash de senha e regras de conflito.
-- `app.js`: preenchimento das listas e campos, login, escolha de perfil, cadastros, eventos e comandos do assistente.
+- `app.js`: preenchimento das listas e campos, login, escolha de perfil, cadastros, eventos e aviso de teste do assistente.
 - `assets/`: imagens que você adicionar.
 
 Para editar um texto ou botão fixo, procure o HTML da tela. Para mudar uma regra ou o preenchimento de uma lista, procure a função correspondente em `app.js` ou `dados.js`. Os ícones simples usados nas listas são SVGs definidos em `dados.js`; os ícones fixos estão nos HTMLs.
@@ -53,13 +53,13 @@ Para editar um texto ou botão fixo, procure o HTML da tela. Para mudar uma regr
 - Bloquear exclusão de cursos, professores e salas que ainda estão em uso.
 - Detectar aulas sobrepostas para a mesma sala, turma ou professor.
 - Salvar cadastros e histórico de alterações no navegador.
-- Consultar conflitos e propor troca de sala no assistente local, com confirmação antes de aplicar.
+- Enviar mensagens de teste ao assistente e receber um aviso fixo de que ele ainda não está configurado.
 
 O link de um curso abre `turmas.html?curso=ID`. O botão Revisar aula abre `horarios.html?editar=ID`, seleciona a turma e o dia da aula e abre a edição.
 
 Os dados iniciais incluem um conflito proposital na terça-feira. Os ajustes continuam em desenvolvimento: edição de perfil, troca de perfil pelos ajustes, exportação, informações de salvamento e saída da conta permanecem indisponíveis.
 
-O menu inferior do gestor tem um link “Assistente” para `assistente.html`, somente com o texto na parte de baixo, sem imagem de ícone. Um espaço vazio mantém o alinhamento com os outros itens. O cartão “Gerar automaticamente” continua abrindo `chat.html`.
+O menu inferior do gestor tem um link “Assistente” para `assistente.html`, somente com o texto na parte de baixo, sem imagem de ícone. Um espaço vazio mantém o alinhamento com os outros itens. O cartão “Testar assistente” continua abrindo `chat.html`.
 
 ## Salvamento e login
 
@@ -83,7 +83,9 @@ Adicionar as imagens não ativa o login com Google ou telefone. Esses botões co
 
 ## Assistente
 
-O assistente usa regras locais, sem modelo de IA externo. Exemplo de comando: `Trocar a sala da turma 62-2 para C306`. Ele permite consultar conflitos ou trocar a sala principal e as aulas da turma após confirmar. Não gera uma grade completa automaticamente.
+O assistente é apenas um modelo de teste. Toda mensagem enviada recebe a resposta fixa: “Este assistente é um modelo de teste e ainda não está configurado.”. Ele não interpreta comandos, consulta conflitos ou modifica salas e horários.
+
+Os exemplos de comandos e os botões de confirmar alterações foram removidos. Mensagens antigas do assistente também exibem o aviso fixo, sem permitir aplicar propostas anteriores. O histórico de mensagens do usuário e os cadastros permanecem salvos.
 
 ## Hospedagem
 
