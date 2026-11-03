@@ -39,7 +39,7 @@ Os formulários de edição, confirmações, cartões das listas e mensagens tam
 - `style.css`: visual compartilhado, incluindo os links com aparência de botão.
 - `dados.js`: dados iniciais, armazenamento, sessão, funções auxiliares, hash de senha e regras de conflito.
 - `app.js`: preenchimento das listas e campos, login, escolha de perfil, cadastros, eventos e aviso de teste do assistente.
-- `assets/`: imagens que você adicionar.
+- `assets/`: imagens exportadas do Figma, já incluídas no projeto.
 
 Para editar um texto ou botão fixo, procure o HTML da tela. Para mudar uma regra ou o preenchimento de uma lista, procure a função correspondente em `app.js` ou `dados.js`. Os ícones simples usados nas listas são SVGs definidos em `dados.js`; os ícones fixos estão nos HTMLs.
 
@@ -69,17 +69,19 @@ Este é um login de protótipo, sem servidor. Use uma senha de teste. O hash SHA
 
 As páginas internas redirecionam para o login quando não há sessão. As páginas de gerenciamento e assistente exigem o perfil Gestor na interface.
 
-## Adicionar imagens
+## Imagens
 
-Coloque os arquivos em:
+As imagens originais do Figma já estão incluídas no projeto:
 
-- `assets/logo.png`: logo completa, com símbolo e nome.
-- `assets/google.png`: ícone do Google.
-- `assets/telefone.png`: ícone do telefone.
+- `assets/logo.png`: logo completa, com símbolo e nome, usada em todas as páginas.
+- `assets/google.png`: ícone do Google no login e cadastro.
+- `assets/telefone.png`: ícone do telefone no login e cadastro.
 
-Depois recarregue a página. Até adicionar as imagens, os espaços ficam vazios. Para usar outros nomes ou formatos, altere o atributo `src` das imagens nos arquivos HTML correspondentes. O favicon personalizado continua removido.
+As exportações mantêm a transparência e a proporção original. O CSS compensa
+as margens transparentes dos ícones para que os símbolos ocupem o espaço dos botões.
+Os links das camadas e as dimensões estão em `assets/IMAGENS.md`.
 
-Adicionar as imagens não ativa o login com Google ou telefone. Esses botões continuam mostrando a mensagem sobre a integração futura.
+Adicionar as imagens não ativa o login com Google ou telefone. Esses botões continuam mostrando a mensagem sobre a integração futura. O favicon personalizado continua removido.
 
 ## Assistente
 

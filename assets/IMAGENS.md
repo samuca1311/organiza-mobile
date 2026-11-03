@@ -1,22 +1,22 @@
-# Suas imagens
+# Imagens do Organiza
 
-Coloque os arquivos nesta pasta com os nomes exatos:
+As três imagens usadas pelo aplicativo estão incluídas nesta pasta.
+São exportações PNG das camadas do Figma, com transparência, sem redesenhar os símbolos.
 
-- `logo.png`: logo completa do Organiza, com símbolo e nome.
-- `google.png`: ícone do botão Entrar com Google.
-- `telefone.png`: ícone do botão Entrar com telefone.
+| Arquivo | Uso | Tamanho | Camada no Figma |
+| --- | --- | --- | --- |
+| `logo.png` | Logo completa em todas as páginas | 278 × 119 px | [image 2](https://www.figma.com/design/DlbPdNFMafXMVGSzWjY9zZ/Sem-titulo?node-id=1-1163) |
+| `google.png` | Botão Entrar com Google no login e cadastro | 113 × 80 px | [Design sem nome 6](https://www.figma.com/design/DlbPdNFMafXMVGSzWjY9zZ/Sem-titulo?node-id=1-1158) |
+| `telefone.png` | Botão Entrar com telefone no login e cadastro | 107 × 76 px | [Design sem nome (1) 3](https://www.figma.com/design/DlbPdNFMafXMVGSzWjY9zZ/Sem-titulo?node-id=1-1160) |
 
-Depois de adicionar os arquivos, recarregue a página. Não precisa alterar o JavaScript.
-Enquanto um arquivo não existir, seu espaço fica vazio, sem mostrar uma imagem quebrada.
-Os botões continuam funcionando como antes.
+Os ícones têm margens transparentes na própria exportação. O CSS centraliza
+a parte visível no espaço de 22 × 22 px dos botões e mantém a proporção dos PNGs.
+A logo também mantém a proporção original.
 
-Logo sugerida: PNG transparente com pelo menos 480 px de largura.
-Ícones sugeridos: PNGs quadrados com pelo menos 48 × 48 px.
+Adicionar as imagens não ativa o login com Google ou telefone. Os botões
+continuam mostrando a mensagem sobre integração futura.
 
-Para usar outros nomes ou formatos, altere o atributo `src` das imagens
-nos arquivos HTML correspondentes. A logo está em todas as páginas;
-Google e telefone estão em `index.html` e `cadastro.html`.
+O menu Assistente continua com o espaço de ícone vazio. Os demais ícones
+da interface permanecem em SVG, e o favicon personalizado continua removido.
 
-O favicon personalizado foi removido. Os outros ícones da interface
-(menu, edição, horários etc.) continuam em SVG.
-
+Para publicar, inclua a pasta `assets/` junto aos arquivos HTML, CSS e JavaScript.

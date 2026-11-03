@@ -135,10 +135,12 @@ a {
 .brand-space {
   display:block;
   width:165px;
-  height:42px;
+  height:auto;
+  aspect-ratio:278 / 119;
 }
 
 .brand-image {
+  display:block;
   width:100%;
   height:100%;
   object-fit:contain;
@@ -775,7 +777,6 @@ input::placeholder,textarea::placeholder {
 
 .auth .brand-space {
   width:240px;
-  height:54px;
 }
 
 .auth .brand-image {
@@ -860,6 +861,22 @@ label {
   width:22px;
   height:22px;
   flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* Os PNGs do Figma incluem margens transparentes. Centraliza o símbolo
+   em 22 px, preservando a imagem exportada e sua proporção original. */
+.social-image img {
+  width:calc(22px * 113 / 39);
+  height:auto;
+  flex-shrink:0;
+}
+
+.social-image img[src$="telefone.png"] {
+  width:calc(22px * 107 / 32);
 }
 
 .auth-foot {
@@ -1323,3 +1340,4 @@ a.auth-switch {
   width:25px;
   height:25px;
 }
+
