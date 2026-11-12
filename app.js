@@ -95,7 +95,7 @@ async function authenticate(form) {
       user = {
         id: id(), name: values.name.trim(), email: email, salt: salt,
         hash: await passwordHash(values.password, salt), role: null,
-        classId: 't4', data: seedData()
+        classId: 't4', participantClassId: '', data: seedData()
       };
       store.accounts.push(user);
     } else if (!user || !user.hash || await passwordHash(values.password, user.salt) !== user.hash) {
@@ -114,7 +114,7 @@ async function authenticate(form) {
 function demo() {
   account = store.accounts.find(item => item.demo);
   if (!account) {
-    account = {id: id(), name: 'João', email: '', demo: true, role: null, classId: 't4', data: seedData()};
+    account = {id: id(), name: 'João', email: '', demo: true, role: null, classId: 't1', participantClassId: 't1', data: seedData()};
     store.accounts.push(account);
   }
   store.session = account.id;
@@ -126,9 +126,49 @@ function scheduleDay(date = new Date()) {
   return weekday >= 1 && weekday <= 5 ? weekday - 1 : 0;
 }
 
+function isCollaborator() {
+  return account.role === 'Colaborador';
+}
+
+function collaboratorId() {
+  if (account.demo) return find('people', 'p1')?.id;
+  const name = account.name.trim().toLocaleLowerCase('pt-BR');
+  const matches = data().people.filter(person => person.name.trim().toLocaleLowerCase('pt-BR') === name);
+  return matches.length === 1 ? matches[0].id : undefined;
+}
+
+function classLabel(classId) {
+  const item = find('classes', classId);
+  return item ? item.name + ' · ' + item.code : '';
+}
+
+function scheduleContext() {
+  if (isCollaborator()) {
+    const personId = collaboratorId();
+    return personId ? 'Agenda de ' + nameOf('people', personId) : 'Sem vínculo com um cadastro de colaborador';
+  }
+  return classLabel(account.participantClassId) || 'Turma não vinculada';
+}
+
+function canViewLesson(lesson, personId) {
+  if (isManager()) return true;
+  if (isCollaborator()) return Boolean(personId) && lesson.personId === personId;
+  return Boolean(account.participantClassId) && lesson.classId === account.participantClassId;
+}
+
 function lessonsForDay(day = selectedDay) {
-  return data().lessons.filter(lesson => lesson.day === day && lesson.classId === account.classId)
+  const personId = isCollaborator() ? collaboratorId() : undefined;
+  return data().lessons.filter(lesson => lesson.day === day &&
+    (isManager() ? lesson.classId === account.classId : canViewLesson(lesson, personId)))
     .sort((a, b) => a.time.localeCompare(b.time));
+}
+
+function scheduleEmptyMessage() {
+  if (isCollaborator()) {
+    return collaboratorId() ? 'Você não tem salas programadas para este dia.' :
+      'Seu nome precisa corresponder a um cadastro de colaborador para exibir a agenda.';
+  }
+  return 'Nenhuma aula cadastrada para esta turma.';
 }
 
 function lessonCountLabel(count) {
@@ -142,6 +182,7 @@ function renderHome() {
     element.textContent = data()[element.dataset.count].length;
   });
   if (isManager()) return;
+  const collaborator = isCollaborator();
   const today = new Date();
   const weekday = today.getDay();
   const day = scheduleDay(today);
@@ -152,12 +193,16 @@ function renderHome() {
   const inProgress = !weekend && next && next.time <= now;
   document.querySelector('#today-schedule-link').href = 'horarios.html?dia=' + day;
   text('#today-date', today.toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'}));
-  text('#today-title', weekday === 0 || weekday === 6 ? 'Próxima segunda-feira' : 'Aulas de hoje');
+  text('#home-schedule-context', scheduleContext());
+  text('#today-title', weekend ? 'Próxima segunda-feira' : collaborator ? 'Salas de hoje' : 'Aulas de hoje');
   text('#today-count', lessonCountLabel(list.length));
   let nextLabel = list.length ? 'Dia concluído' : 'Sem aulas';
-  if (next) nextLabel = inProgress ? 'Aula em andamento' : 'Próxima aula';
+  if (next) nextLabel = inProgress ? 'Aula em andamento' : collaborator ? 'Próxima sala' : 'Próxima aula';
   text('#next-label', '» ' + nextLabel);
-  text('#next-subject', next ? next.subject : 'Tudo em dia!');
+  text('#next-subject', next ? (collaborator ? 'Sala ' + nameOf('rooms', next.roomId) : next.subject) : 'Tudo em dia!');
+  document.querySelector('#next-person-row').hidden = collaborator;
+  document.querySelector('#next-room-row').hidden = collaborator;
+  text('#today-empty', scheduleEmptyMessage());
   document.querySelector('#next-details').hidden = !next;
   document.querySelector('#next-empty').hidden = Boolean(next);
   if (next) {
@@ -169,8 +214,8 @@ function renderHome() {
   container.replaceChildren();
   for (const lesson of list) {
     const row = copyTemplate('lesson-row-template');
-    text('[data-subject]', lesson.subject, row);
-    text('[data-time]', lesson.time, row);
+    text('[data-subject]', collaborator ? 'Sala ' + nameOf('rooms', lesson.roomId) : lesson.subject, row);
+    text('[data-time]', collaborator ? lesson.time + ' – ' + lesson.end : lesson.time, row);
     container.append(row);
   }
   document.querySelector('#today-empty').hidden = list.length > 0;
@@ -203,8 +248,14 @@ function setActions(row, type, itemId) {
 }
 
 function renderSchedule() {
-  text('#page-title', isManager() ? 'Horários' : 'Meus Horários');
-  fillOptions(document.querySelector('#schedule-class'), classChoices(), account.classId);
+  const collaborator = isCollaborator();
+  text('#page-title', isManager() ? 'Horários' : collaborator ? 'Minha agenda de salas' : 'Meus horários');
+  if (isManager()) {
+    fillOptions(document.querySelector('#schedule-class'), classChoices(), account.classId);
+  } else {
+    text('#schedule-context', scheduleContext());
+    text('.subtitle', collaborator ? 'Veja onde você precisa estar a cada horário.' : 'Consulte as aulas da sua turma.');
+  }
   const list = lessonsForDay();
   text('#schedule-summary', dayNames[selectedDay] + ' · ' + lessonCountLabel(list.length));
   document.querySelectorAll('[data-day]').forEach(button => {
@@ -215,6 +266,14 @@ function renderSchedule() {
   const container = document.querySelector('#lesson-list');
   container.replaceChildren();
   for (const lesson of list) {
+    if (collaborator) {
+      const row = copyTemplate('room-visit-template');
+      text('[data-room]', 'Sala ' + nameOf('rooms', lesson.roomId), row);
+      text('[data-time]', lesson.time + ' – ' + lesson.end, row);
+      text('[data-class]', classLabel(lesson.classId), row);
+      container.append(row);
+      continue;
+    }
     const row = copyTemplate('lesson-template');
     const avatar = row.querySelector('[data-lesson-icon]');
     avatar.classList.toggle('green', lesson.subject === 'Inglês');
@@ -227,7 +286,7 @@ function renderSchedule() {
     setActions(row, 'lessons', lesson.id);
     container.append(row);
   }
-  if (!list.length) showEmpty(container, 'Dia livre', 'Nenhuma aula cadastrada para esta turma.');
+  if (!list.length) showEmpty(container, collaborator ? 'Nenhuma sala programada' : 'Dia livre', scheduleEmptyMessage());
 }
 
 function renderEntities() {
@@ -270,19 +329,34 @@ function renderEntities() {
   if (!items.length) showEmpty(container, 'Nada por aqui', 'Tente outra busca ou adicione um cadastro.');
 }
 
-function renderNotices() {
+function visibleConflicts() {
   const issues = conflicts();
+  if (isManager()) return issues;
+  const personId = isCollaborator() ? collaboratorId() : undefined;
+  return issues.flatMap(issue => {
+    const lessons = [issue.a, issue.b].filter(lesson => canViewLesson(lesson, personId));
+    return lessons.length ? [{...issue, lessons}] : [];
+  });
+}
+
+function renderNotices() {
+  const issues = visibleConflicts();
   text('#conflict-count', issues.length);
   const container = document.querySelector('#conflict-list');
   container.replaceChildren();
   for (const issue of issues) {
     const row = copyTemplate('conflict-template');
-    text('[data-conflict-title]', 'Conflito · ' + days[issue.a.day] + ', ' + issue.a.time, row);
-    text('[data-description]', nameOf('classes', issue.a.classId) + ' (' + find('classes', issue.a.classId)?.code + ') e ' + nameOf('classes', issue.b.classId) + ' (' + find('classes', issue.b.classId)?.code + ')\n' + issue.reasons.join(' e ') + '.', row);
+    const lessons = issue.lessons || [issue.a, issue.b];
+    const first = lessons[0];
+    text('[data-conflict-title]', 'Conflito · ' + days[first.day] + ', ' + first.time, row);
+    const description = isManager() ? lessons.map(lesson => classLabel(lesson.classId)).join(' e ') :
+      lessons.map(lesson => 'Sala ' + nameOf('rooms', lesson.roomId) + ' · ' + lesson.time + ' – ' + lesson.end).join('\n');
+    text('[data-description]', description + '\n' + issue.reasons.join(' e ') + '.', row);
     row.querySelector('[data-edit]').dataset.id = issue.b.id;
     container.append(row);
   }
   if (!issues.length) showEmpty(container, 'Tudo em ordem', 'Nenhum conflito de sala, professor ou turma.');
+  if (!isManager()) return;
   const history = document.querySelector('#history-list');
   history.replaceChildren();
   for (const entry of data().history.slice(0, 20)) {
@@ -319,7 +393,7 @@ function render() {
     case 'chat': renderChat(); break;
     case 'settings': text('#current-role', account.role); break;
   }
-  const count = conflicts().length;
+  const count = visibleConflicts().length;
   const managerNotice = document.querySelector('#manager-notice');
   if (managerNotice && isManager()) {
     managerNotice.classList.toggle('has-conflicts', count > 0);
@@ -396,7 +470,7 @@ function askDelete(type, itemId) {
 
 function details(itemId) {
   const lesson = find('lessons', itemId);
-  if (!lesson) return;
+  if (!lesson || isCollaborator() || !canViewLesson(lesson)) return;
   const content = showModal(lesson.subject, 'details-template');
   text('[data-day-name]', dayNames[lesson.day], content);
   text('[data-hours]', lesson.time + ' – ' + lesson.end, content);
@@ -447,8 +521,24 @@ document.addEventListener('click', event => {
   if (!button) return;
   const d = button.dataset;
   if (d.role) {
+    const previousRole = account.role;
+    const previousClass = account.participantClassId;
+    if (d.role === 'Participante' && !account.demo && !find('classes', previousClass)) {
+      const selectedClass = document.querySelector('#participant-class').value;
+      if (!find('classes', selectedClass)) {
+        event.preventDefault();
+        toast('Selecione sua turma para continuar.');
+        document.querySelector('#participant-class').focus();
+        return;
+      }
+      account.participantClassId = selectedClass;
+    }
     account.role = d.role;
-    if (!persist()) event.preventDefault();
+    if (!persist()) {
+      account.role = previousRole;
+      account.participantClassId = previousClass;
+      event.preventDefault();
+    }
   }
   if (d.day !== undefined) {
     selectedDay = Number(d.day);
@@ -492,7 +582,7 @@ document.addEventListener('input', event => {
 });
 
 document.addEventListener('change', event => {
-  if (event.target.id === 'schedule-class') {
+  if (event.target.id === 'schedule-class' && isManager()) {
     account.classId = event.target.value;
     persist();
     render();
@@ -515,18 +605,23 @@ modal.addEventListener('click', event => {
 });
 
 function startPage() {
-  // Atualiza apenas a turma de exemplo antiga, preservando os vínculos das aulas.
-  let classCodeChanged = false;
+  // Separa a turma do participante do filtro usado pelo gestor e atualiza o código de exemplo.
+  let accountDataChanged = false;
   for (const user of store.accounts) {
     const classes = user.data?.classes;
-    if (!Array.isArray(classes) || classes.some(item => item.code === '62-1')) continue;
+    if (!Array.isArray(classes)) continue;
+    if (user.participantClassId === undefined) {
+      user.participantClassId = user.demo ? 't1' : user.role === 'Participante' ? user.classId || '' : '';
+      accountDataChanged = true;
+    }
+    if (classes.some(item => item.code === '62-1')) continue;
     const sample = classes.find(item => item.id === 't4' && item.courseId === 'c1' && item.code === '52-1');
     if (sample) {
       sample.code = '62-1';
-      classCodeChanged = true;
+      accountDataChanged = true;
     }
   }
-  if (classCodeChanged) persist();
+  if (accountDataChanged) persist();
 
   if (page === 'login' || page === 'signup') {
     if (account) location.replace(account.role ? 'inicio.html' : 'perfis.html');
@@ -536,7 +631,15 @@ function startPage() {
     location.replace('index.html');
     return;
   }
-  if (page === 'profiles') return;
+  if (page === 'profiles') {
+    if (!account.demo && !find('classes', account.participantClassId)) {
+      const select = document.querySelector('#participant-class');
+      const choices = [{id: '', name: 'Selecione sua turma'}, ...classChoices()];
+      fillOptions(select, choices, '');
+      document.querySelector('#participant-class-choice').hidden = false;
+    }
+    return;
+  }
   if (!account.role) {
     location.replace('perfis.html');
     return;
