@@ -81,7 +81,7 @@ function seedData() {
       {id:'t1',name:'2º Informática',code:'62-2',courseId:'c1',students:32,shift:'Tarde',year:'2026',roomId:'r1'},
       {id:'t2',name:'2º Química',code:'71-2',courseId:'c2',students:30,shift:'Manhã',year:'2026',roomId:'r2'},
       {id:'t3',name:'3º Eletrotécnica',code:'23-1',courseId:'c3',students:25,shift:'Manhã',year:'2026',roomId:'r3'},
-      {id:'t4',name:'2º Informática',code:'52-1',courseId:'c1',students:20,shift:'Manhã',year:'2026',roomId:'r4'}
+      {id:'t4',name:'2º Informática',code:'62-1',courseId:'c1',students:20,shift:'Manhã',year:'2026',roomId:'r4'}
     ],
     people:[{id:'p1',name:'Carlos Pereira',subject:'Programação'},{id:'p2',name:'Ana Souza',subject:'Inglês'},{id:'p3',name:'Marcos Lima',subject:'Química'}],
     rooms:[{id:'r1',name:'C305',capacity:35},{id:'r2',name:'B104',capacity:35},{id:'r3',name:'A101',capacity:30},{id:'r4',name:'C311',capacity:35},{id:'r5',name:'C201',capacity:35},{id:'r6',name:'C306',capacity:40}],
