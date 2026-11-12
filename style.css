@@ -1408,3 +1408,68 @@ a.auth-switch {
 }
 
 
+
+.records-nav {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:6px;
+  padding:6px;
+  margin-bottom:16px;
+  background:#e9e9ef;
+  border-radius:13px;
+}
+
+.records-nav a {
+  display:grid;
+  place-items:center;
+  min-height:44px;
+  padding:5px;
+  border-radius:9px;
+  color:var(--ink);
+  text-decoration:none;
+  font-weight:600;
+}
+
+.records-nav a[aria-current="page"] {
+  background:#fff;
+  color:var(--blue);
+  box-shadow:0 1px 3px #24204f20;
+}
+
+.schedule-context {
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:12px;
+}
+
+.room-visit {
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  background:#fff;
+  border:1px solid var(--line);
+}
+
+.room-visit-icon {
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  flex:none;
+  border-radius:12px;
+  background:#eeedff;
+  color:var(--blue);
+}
+
+.room-visit h3 {
+  font:700 19px/1.25 Arial, Helvetica, sans-serif;
+}
+
+.room-visit p {
+  margin-top:4px;
+}
+
+.room-visit-class {
+  color:var(--muted);
+  font-size:12px;
+}
