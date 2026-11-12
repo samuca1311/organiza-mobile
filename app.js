@@ -131,6 +131,10 @@ function lessonsForDay(day = selectedDay) {
     .sort((a, b) => a.time.localeCompare(b.time));
 }
 
+function lessonCountLabel(count) {
+  return count + (count === 1 ? ' aula' : ' aulas');
+}
+
 function renderHome() {
   text('#page-title', 'Olá, ' + account.name.split(' ')[0] + '! 👋');
   text('.subtitle', isManager() ? 'Bem-vindo ao painel de gestão.' : 'Bem-vindo ao seu painel de horários.');
@@ -149,7 +153,7 @@ function renderHome() {
   document.querySelector('#today-schedule-link').href = 'horarios.html?dia=' + day;
   text('#today-date', today.toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'}));
   text('#today-title', weekday === 0 || weekday === 6 ? 'Próxima segunda-feira' : 'Aulas de hoje');
-  text('#today-count', list.length + ' aulas');
+  text('#today-count', lessonCountLabel(list.length));
   let nextLabel = list.length ? 'Dia concluído' : 'Sem aulas';
   if (next) nextLabel = inProgress ? 'Aula em andamento' : 'Próxima aula';
   text('#next-label', '» ' + nextLabel);
@@ -202,7 +206,7 @@ function renderSchedule() {
   text('#page-title', isManager() ? 'Horários' : 'Meus Horários');
   fillOptions(document.querySelector('#schedule-class'), classChoices(), account.classId);
   const list = lessonsForDay();
-  text('#schedule-summary', dayNames[selectedDay] + ' · ' + list.length + ' aulas');
+  text('#schedule-summary', dayNames[selectedDay] + ' · ' + lessonCountLabel(list.length));
   document.querySelectorAll('[data-day]').forEach(button => {
     const active = Number(button.dataset.day) === selectedDay;
     button.classList.toggle('active', active);
@@ -316,6 +320,14 @@ function render() {
     case 'settings': text('#current-role', account.role); break;
   }
   const count = conflicts().length;
+  const managerNotice = document.querySelector('#manager-notice');
+  if (managerNotice && isManager()) {
+    managerNotice.classList.toggle('has-conflicts', count > 0);
+    text('#manager-notice-summary', count === 1 ? '1 conflito para revisar.' :
+      count > 1 ? count + ' conflitos para revisar.' : 'Nenhum conflito nos horários.');
+    text('#manager-notice-link', count === 1 ? 'Revisar conflito' :
+      count > 1 ? 'Revisar conflitos' : 'Ver avisos');
+  }
   document.querySelectorAll('[data-alert-summary]').forEach(element => {
     element.textContent = count ? count + ' conflito(s) encontrado(s) nos horários.' : 'Tudo certo! Nenhum conflito nos horários.';
   });
@@ -503,6 +515,19 @@ modal.addEventListener('click', event => {
 });
 
 function startPage() {
+  // Atualiza apenas a turma de exemplo antiga, preservando os vínculos das aulas.
+  let classCodeChanged = false;
+  for (const user of store.accounts) {
+    const classes = user.data?.classes;
+    if (!Array.isArray(classes) || classes.some(item => item.code === '62-1')) continue;
+    const sample = classes.find(item => item.id === 't4' && item.courseId === 'c1' && item.code === '52-1');
+    if (sample) {
+      sample.code = '62-1';
+      classCodeChanged = true;
+    }
+  }
+  if (classCodeChanged) persist();
+
   if (page === 'login' || page === 'signup') {
     if (account) location.replace(account.role ? 'inicio.html' : 'perfis.html');
     return;

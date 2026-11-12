@@ -365,36 +365,108 @@ a {
   max-width:430px;
   z-index:10;
   display:flex;
-  justify-content:space-around;
-  padding:8px 8px max(9px,env(safe-area-inset-bottom));
-  background:#dedee1eF;
-  backdrop-filter:blur(14px);
-  border-top:1px solid #ceced4
+  gap:2px;
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+  background:#fff;
+  border-top:1px solid #d8d9e3;
+  box-shadow:0 -4px 16px #1b174e0a;
 }
 
 .nav-item {
-  flex:1;
-  border:0;
-  background:none;
+  flex:1 1 0;
+  min-width:0;
   min-height:52px;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:5px;
+  gap:4px;
   color:#494953;
-  font-size:10px;
-  border-radius:12px
+  font-size:clamp(9px, 2.65vw, 11px);
+  font-weight:600;
+  line-height:1.15;
+  border-radius:10px;
 }
 
 .nav-item.active {
   color:var(--blue);
-  background:#ceccff66
+  background:#eeedff;
 }
 
 .nav-item svg {
-  width:25px;
-  height:25px
+  width:22px;
+  height:22px;
+}
+
+.manager-notice {
+  background:#fff;
+  border:1px solid #d8d9e3;
+  margin-bottom:20px;
+}
+
+.manager-notice.has-conflicts {
+  background:#fff8ee;
+  border-color:#edc694;
+}
+
+.manager-notice h2 {
+  font-size:19px;
+}
+
+.manager-notice p {
+  color:var(--muted);
+  margin:6px 0 12px;
+}
+
+.settings-panel {
+  padding:0;
+  background:#fff;
+  border:1px solid #d8d9e3;
+}
+
+.settings-profile {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:16px;
+}
+
+.settings-profile h2 {
+  font-size:17px;
+}
+
+.settings-profile p {
+  color:var(--muted);
+  margin-top:3px;
+}
+
+.settings-action {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  min-height:52px;
+  padding:12px 16px;
+  border:0;
+  border-top:1px solid #e4e4ec;
+  background:transparent;
+  color:var(--blue);
+  text-align:left;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.settings-action svg {
+  width:20px;
+  height:20px;
+}
+
+.settings-action:focus-visible {
+  outline-offset:-3px;
+}
+
+.settings-logout {
+  color:#a3293d;
 }
 
 .date-line {
