@@ -4,8 +4,8 @@ const ASSISTANT_TEST_NOTICE = 'Este assistente é um modelo de teste e ainda nã
 const signup = page === 'signup';
 const modal = document.querySelector('#modal');
 const params = new URLSearchParams(location.search);
-let selectedDay = Number(params.get('dia') || 1);
-if (!Number.isInteger(selectedDay) || selectedDay < 0 || selectedDay > 4) selectedDay = 1;
+const dayParam = params.get('dia');
+let selectedDay = /^[0-4]$/.test(dayParam) ? Number(dayParam) : scheduleDay();
 let query = '';
 let courseFilter = params.get('curso') || '';
 let shiftFilter = '';
@@ -121,6 +121,11 @@ function demo() {
   if (persist()) navigate('profiles');
 }
 
+function scheduleDay(date = new Date()) {
+  const weekday = date.getDay();
+  return weekday >= 1 && weekday <= 5 ? weekday - 1 : 0;
+}
+
 function lessonsForDay(day = selectedDay) {
   return data().lessons.filter(lesson => lesson.day === day && lesson.classId === account.classId)
     .sort((a, b) => a.time.localeCompare(b.time));
@@ -135,14 +140,19 @@ function renderHome() {
   if (isManager()) return;
   const today = new Date();
   const weekday = today.getDay();
-  const day = weekday >= 1 && weekday <= 5 ? weekday - 1 : 0;
+  const day = scheduleDay(today);
+  const weekend = weekday === 0 || weekday === 6;
   const list = lessonsForDay(day);
   const now = today.toTimeString().slice(0, 5);
-  const next = list.find(lesson => weekday >= 1 && weekday <= 5 ? lesson.end > now : true);
+  const next = weekend ? list[0] : list.find(lesson => lesson.end > now);
+  const inProgress = !weekend && next && next.time <= now;
+  document.querySelector('#today-schedule-link').href = 'horarios.html?dia=' + day;
   text('#today-date', today.toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'}));
   text('#today-title', weekday === 0 || weekday === 6 ? 'Próxima segunda-feira' : 'Aulas de hoje');
   text('#today-count', list.length + ' aulas');
-  text('#next-label', next ? '» Próxima aula' : '» Dia concluído');
+  let nextLabel = list.length ? 'Dia concluído' : 'Sem aulas';
+  if (next) nextLabel = inProgress ? 'Aula em andamento' : 'Próxima aula';
+  text('#next-label', '» ' + nextLabel);
   text('#next-subject', next ? next.subject : 'Tudo em dia!');
   document.querySelector('#next-details').hidden = !next;
   document.querySelector('#next-empty').hidden = Boolean(next);
@@ -303,6 +313,7 @@ function render() {
     case 'rooms': renderEntities(); break;
     case 'notices': renderNotices(); break;
     case 'chat': renderChat(); break;
+    case 'settings': text('#current-role', account.role); break;
   }
   const count = conflicts().length;
   document.querySelectorAll('[data-alert-summary]').forEach(element => {
@@ -437,8 +448,15 @@ document.addEventListener('click', event => {
   if (d.detail) details(d.detail);
   if (d.action === 'close') modal.close();
   if (d.action === 'demo') demo();
-  if (d.action === 'integration') {
-    showMessage('Entrar com ' + d.name, 'O login com ' + d.name + ' ainda precisa de um serviço de autenticação e suas credenciais de configuração. Por enquanto, crie uma conta local com e-mail ou explore a demonstração.');
+  if (d.action === 'logout') {
+    const session = store.session;
+    store.session = null;
+    if (persist()) {
+      account = null;
+      location.replace(pageFiles.login);
+    } else {
+      store.session = session;
+    }
   }
 });
 
