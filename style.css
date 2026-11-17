@@ -1,4 +1,4 @@
-/* Layout exclusivamente mobile. Em telas grandes, mantém a largura de celular. */
+/* Estilos para celular e adaptações para telas maiores. */
 :root {
   --blue:#2924e8;
   --blue-dark:#211bc6;
@@ -1472,4 +1472,143 @@ a.auth-switch {
 .room-visit-class {
   color:var(--muted);
   font-size:12px;
+}
+
+.today-panel > .section-title:first-child {
+  margin-top:24px;
+}
+
+@media (min-width: 900px) {
+  .app:has(> .responsive-content) {
+    display:grid;
+    grid-template-columns:200px minmax(0, 1fr);
+    grid-template-rows:auto 1fr;
+    max-width:1440px;
+    overflow:visible;
+  }
+
+  .app:has(> .responsive-content) > .topbar {
+    grid-column:1 / -1;
+    padding:22px 36px 28px;
+  }
+
+  .app:has(> .responsive-content) > .topbar .brand-row {
+    margin-bottom:12px;
+  }
+
+  .app:has(> .responsive-content) > .topbar h1 {
+    font-size:38px;
+  }
+
+  .app:has(> .responsive-content) > .topbar .subtitle {
+    font-size:14px;
+  }
+
+  .app:has(> .responsive-content) > .bottom-nav {
+    grid-area:2 / 1;
+    position:sticky;
+    top:0;
+    left:auto;
+    bottom:auto;
+    transform:none;
+    align-self:start;
+    flex-direction:column;
+    gap:6px;
+    padding:24px 14px;
+    border:0;
+    border-radius:0 0 16px 0;
+    box-shadow:none;
+  }
+
+  .app:has(> .responsive-content) > .bottom-nav .nav-item {
+    flex:0 0 auto;
+    flex-direction:row;
+    justify-content:flex-start;
+    padding:0 12px;
+    gap:10px;
+    font-size:14px;
+  }
+
+  .responsive-content {
+    grid-area:2 / 2;
+    min-width:0;
+    min-height:0;
+    margin:0;
+    border-radius:0;
+    padding:28px clamp(24px, 3.5vw, 52px) 52px;
+  }
+
+  [data-page="home"] .metrics {
+    gap:16px;
+  }
+
+  [data-page="home"] .metric {
+    padding:18px;
+  }
+
+  [data-page="home"] .manager-notice .primary {
+    width:fit-content;
+  }
+
+  [data-page="home"] .responsive-content > [data-reader-only] {
+    display:grid;
+    grid-template-columns:minmax(0, 2fr) minmax(0, 3fr);
+    grid-template-rows:auto auto auto 1fr;
+    align-items:start;
+    column-gap:24px;
+  }
+
+  [data-page="home"] .today-panel {
+    grid-area:1 / 2 / span 4;
+    min-width:0;
+  }
+
+  [data-page="home"] .today-panel > .section-title:first-child {
+    margin-top:0;
+  }
+
+  [data-page="schedule"] .schedule-picker {
+    max-width:360px;
+  }
+
+  [data-page="schedule"] .day {
+    min-height:44px;
+    font-size:14px;
+  }
+
+  #lesson-list {
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:16px;
+  }
+
+  #lesson-list > .empty {
+    grid-column:1 / -1;
+  }
+
+  #lesson-list > .card {
+    min-width:0;
+    padding:18px;
+  }
+
+  #lesson-list [data-subject] {
+    overflow-wrap:anywhere;
+  }
+
+  [data-page="notices"] .responsive-content:has(> [data-manager-only]:not([hidden])) {
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
+    align-content:start;
+    align-items:start;
+    gap:24px;
+  }
+}
+
+@media (min-width: 1280px) {
+  [data-page="home"] .responsive-content .metrics {
+    grid-template-columns:repeat(6, minmax(0, 1fr));
+  }
+
+  #lesson-list {
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
 }
