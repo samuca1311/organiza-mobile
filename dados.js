@@ -232,7 +232,7 @@ function nameOf(type, value) {
 
 function persist() {
   try { localStorage.setItem(STORAGE_KEY,JSON.stringify(store)); storageAvailable = true; return true; }
-  catch { storageAvailable = false; toast('Não foi possível salvar. Verifique o espaço e as permissões do navegador.'); return false; }
+  catch { storageAvailable = false; if (typeof toast === 'function') toast('Não foi possível salvar. Verifique o espaço e as permissões do navegador.'); return false; }
 }
 
 function conflicts() {
@@ -271,3 +271,27 @@ async function passwordHash(password,salt) {
   const digest = await crypto.subtle.digest('SHA-256',bytes);
   return [...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');
 }
+
+function restoreDemoRoomConflict(data) {
+  if (!data || data.demoRoomConflictVersion === 1) return false;
+
+  const classId = data.classes.find(item => item.code === '62-1' && item.courseId === 'c1')?.id;
+  const chemistry = data.lessons.find(lesson =>
+    lesson.classId === 't2' && lesson.subject === 'Química' &&
+    lesson.day === 1 && lesson.time === '07:30' && lesson.roomId === 'r4'
+  );
+  const informatica = data.lessons.find(lesson =>
+    lesson.classId === classId && lesson.day === 1 && lesson.time === '07:30' &&
+    lesson.id === 'info-62-1-1-0'
+  );
+
+  // A sala de exemplo pertence apenas à demonstração.
+  if (chemistry && informatica && !informatica.roomId && data.rooms.some(room => room.id === 'r4')) {
+    informatica.roomId = chemistry.roomId;
+  }
+  data.demoRoomConflictVersion = 1;
+  return true;
+}
+
+const updatedDemos = store.accounts.filter(item => item.demo && restoreDemoRoomConflict(item.data));
+if (updatedDemos.length) persist();
