@@ -273,7 +273,7 @@ async function passwordHash(password,salt) {
 }
 
 function restoreDemoRoomConflict(data) {
-  if (!data || data.demoRoomConflictVersion === 1) return false;
+  if (!data || data.demoRoomConflictVersion === 2) return false;
 
   const classId = data.classes.find(item => item.code === '62-1' && item.courseId === 'c1')?.id;
   const chemistry = data.lessons.find(lesson =>
@@ -289,9 +289,15 @@ function restoreDemoRoomConflict(data) {
   if (chemistry && informatica && !informatica.roomId && data.rooms.some(room => room.id === 'r4')) {
     informatica.roomId = chemistry.roomId;
   }
-  data.demoRoomConflictVersion = 1;
+  data.demoRoomConflictVersion = 2;
   return true;
 }
 
-const updatedDemos = store.accounts.filter(item => item.demo && restoreDemoRoomConflict(item.data));
-if (updatedDemos.length) persist();
+let demoDataChanged = false;
+for (const user of store.accounts) {
+  if (!user.demo || !Array.isArray(user.data?.classes)) continue;
+  const scheduleChanged = applyInformaticaSchedule(user.data);
+  const conflictChanged = restoreDemoRoomConflict(user.data);
+  if (scheduleChanged || conflictChanged) demoDataChanged = true;
+}
+if (demoDataChanged) persist();
