@@ -131,7 +131,7 @@ function isCollaborator() {
 }
 
 function collaboratorId() {
-  if (account.demo) return find('people', 'p1')?.id;
+  if (account.demo) return find('people', 'info-docente-Thomaz')?.id;
   const name = account.name.trim().toLocaleLowerCase('pt-BR');
   const matches = data().people.filter(person => person.name.trim().toLocaleLowerCase('pt-BR') === name);
   return matches.length === 1 ? matches[0].id : undefined;
@@ -295,7 +295,8 @@ function renderEntities() {
     const name = (item.name + ' ' + (item.code || '')).toLowerCase();
     if (!name.includes(query.toLowerCase())) return false;
     if (courseFilter && item.courseId !== courseFilter) return false;
-    if (shiftFilter && item.shift !== shiftFilter) return false;
+    if (shiftFilter && item.shift !== shiftFilter &&
+        !(item.shift === 'Manhã e tarde' && ['Manhã', 'Tarde'].includes(shiftFilter))) return false;
     return true;
   });
   container.replaceChildren();
@@ -313,9 +314,10 @@ function renderEntities() {
     if (page === 'courses') {
       const classes = data().classes.filter(turma => turma.courseId === item.id);
       const students = classes.reduce((total, turma) => total + Number(turma.students), 0);
-      description = item.type + '\n' + classes.length + ' turmas · ' + students + ' alunos';
+      description = item.type + '\n' + classes.length + ' turmas';
+      if (classes.every(turma => turma.students != null)) description += ' · ' + students + ' alunos';
     }
-    if (page === 'classes') description = item.code + ' | Participantes: ' + item.students + '\nTurno ' + item.shift + ' | Sala principal: ' + nameOf('rooms', item.roomId);
+    if (page === 'classes') description = item.code + ' | Participantes: ' + (item.students ?? 'Não informado') + '\nTurno ' + item.shift + ' | Sala principal: ' + nameOf('rooms', item.roomId);
     if (page === 'people') description = item.subject + '\n' + data().lessons.filter(lesson => lesson.personId === item.id).length + ' aulas na semana';
     if (page === 'rooms') description = 'Capacidade: ' + item.capacity + ' pessoas\n' + data().lessons.filter(lesson => lesson.roomId === item.id).length + ' aulas na semana';
     text('[data-description]', description, row);
@@ -429,7 +431,7 @@ function edit(type, itemId) {
   const form = content.querySelector('form');
   form.dataset.type = type;
   form.dataset.id = itemId || '';
-  const choices = {courseId: data().courses, classId: classChoices(), roomId: data().rooms, personId: data().people};
+  const choices = {courseId: data().courses, classId: classChoices(), roomId: [{id: '', name: 'Não definida'}, ...data().rooms], personId: data().people};
   for (const name of Object.keys(choices)) {
     const select = form.elements.namedItem(name);
     if (select) fillOptions(select, choices[name], item[name]);
@@ -442,7 +444,7 @@ function edit(type, itemId) {
     personId: data().people[0]?.id, ...item
   };
   for (const input of form.elements) {
-    if (input.name && values[input.name] !== undefined) input.value = values[input.name];
+    if (input.name && values[input.name] !== undefined) input.value = values[input.name] ?? '';
   }
 }
 
@@ -485,11 +487,11 @@ function saveEntity(form) {
   const {type,id:itemId}=form.dataset;const values=Object.fromEntries(new FormData(form));
   Object.keys(values).forEach(key=>values[key]=values[key].trim());
   const error=document.querySelector('#edit-error');
-  if(Object.values(values).some(v=>v==='')) {error.textContent='Preencha todos os campos.';return;}
+  if(Object.entries(values).some(([key, value]) => value === '' && !['roomId', 'students'].includes(key))) {error.textContent='Preencha todos os campos.';return;}
   if(type==='lessons' && values.end<=values.time) {error.textContent='O término precisa ser depois do início.';return;}
   if(type==='classes' && data().classes.some(c=>c.code.toLowerCase()===values.code.toLowerCase()&&c.id!==itemId)) {error.textContent='Já existe uma turma com este código.';return;}
   if(type==='rooms' && data().rooms.some(r=>r.name.toLowerCase()===values.name.toLowerCase()&&r.id!==itemId)) {error.textContent='Já existe uma sala com este nome.';return;}
-  ['day','students','capacity'].forEach(key=>{if(key in values) values[key]=Number(values[key]);});
+  ['day','students','capacity'].forEach(key=>{if(key in values) values[key]=values[key] === '' ? null : Number(values[key]);});
   if(itemId) Object.assign(find(type,itemId),values); else data()[type].push({id:id(),...values});
   if(type==='lessons') {account.classId=values.classId;selectedDay=values.day;}
   if(!account.classId && type==='classes') account.classId=data().classes[0].id;
@@ -605,7 +607,7 @@ modal.addEventListener('click', event => {
 });
 
 function startPage() {
-  // Separa a turma do participante do filtro usado pelo gestor e atualiza o código de exemplo.
+  // Separa a turma do participante do filtro usado pelo gestor e importa a grade nas contas existentes.
   let accountDataChanged = false;
   for (const user of store.accounts) {
     const classes = user.data?.classes;
@@ -614,12 +616,7 @@ function startPage() {
       user.participantClassId = user.demo ? 't1' : user.role === 'Participante' ? user.classId || '' : '';
       accountDataChanged = true;
     }
-    if (classes.some(item => item.code === '62-1')) continue;
-    const sample = classes.find(item => item.id === 't4' && item.courseId === 'c1' && item.code === '52-1');
-    if (sample) {
-      sample.code = '62-1';
-      accountDataChanged = true;
-    }
+    if (applyInformaticaSchedule(user.data)) accountDataChanged = true;
   }
   if (accountDataChanged) persist();
 

@@ -40,7 +40,7 @@
 <div class="filters">
   <select id="filter-course" aria-label="Filtrar por curso"><option value="">Todos os cursos</option></select>
   <select id="filter-shift" aria-label="Filtrar por turno">
-    <option value="">Todos os turnos</option><option>Manhã</option><option>Tarde</option><option>Noite</option>
+    <option value="">Todos os turnos</option><option>Manhã</option><option>Tarde</option><option>Noite</option><option>Manhã e tarde</option>
   </select>
 </div>
 <div id="entity-list" class="stack"></div>
@@ -82,10 +82,10 @@
     <label>Nome da turma<input name="name" type="text" required maxlength="60"></label>
 <label>Código<input name="code" type="text" required maxlength="20"></label>
 <label>Curso<select name="courseId" required></select></label>
-<label>Participantes<input name="students" type="number" required min="1" max="300"></label>
-<label>Turno<select name="shift" required><option value="Manhã">Manhã</option><option value="Tarde">Tarde</option><option value="Noite">Noite</option></select></label>
+<label>Participantes<input name="students" type="number" min="1" max="300"></label>
+<label>Turno<select name="shift" required><option value="Manhã">Manhã</option><option value="Tarde">Tarde</option><option value="Noite">Noite</option><option value="Manhã e tarde">Manhã e tarde</option></select></label>
 <label>Ano<input name="year" type="number" required min="2020" max="2100"></label>
-<label>Sala principal<select name="roomId" required></select></label>
+<label>Sala principal<select name="roomId"></select></label>
     <p id="edit-error" class="form-error" role="alert"></p>
     <div class="modal-actions">
       <button type="button" class="secondary" data-action="close">Cancelar</button>
