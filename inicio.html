@@ -7,7 +7,7 @@
   <meta name="description" content="Organiza: seus cursos, turmas e horários em um só lugar.">
   <title>Olá! 👋 | Organiza</title>
   <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="stylesheet" href="style.css?v=perfis-2">
+  <link rel="stylesheet" href="style.css?v=desktop-1">
   <script src="dados.js?v=perfis-2" defer></script>
   <script src="app.js?v=perfis-2" defer></script>
 </head>
@@ -25,7 +25,7 @@
   <h1 id="page-title">Olá! 👋</h1>
   <p class="subtitle">Bem-vindo ao Organiza.</p>
 </header>
-<main class="content">
+<main class="content responsive-content">
 
 <section data-manager-only>
   <section class="card manager-notice" id="manager-notice" aria-labelledby="manager-notice-title">
@@ -61,12 +61,14 @@
     </div>
     <p class="muted" id="next-empty" hidden>Confira as próximas aulas em Meus Horários.</p>
   </section>
+  <div class="today-panel">
   <div class="section-title"><h2 id="today-title">Aulas de hoje</h2><span class="badge" id="today-count"></span></div>
   <section class="card">
     <div id="today-lessons"></div>
     <p class="muted" id="today-empty" hidden>Nenhuma aula cadastrada para esta turma.</p>
     <a id="today-schedule-link" class="link-button" href="horarios.html">Conferir completo →</a>
   </section>
+  </div>
   <div class="section-title"><h2>Avisos</h2></div>
   <section class="card notice">
   <h3>Alertas <span class="warning">⚠</span></h3>
